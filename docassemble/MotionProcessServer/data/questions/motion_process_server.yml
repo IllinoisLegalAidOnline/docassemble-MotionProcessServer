@@ -20,6 +20,7 @@ objects:
   - process_server: ALIndividual
   - delivery_parties: ALPeopleList.using(there_are_any=True)
   - delivery_parties[i].lawyer: ALIndividual
+  - service_parties: ALPeopleList.using(there_are_any=True)
   - court_list: ALCourtLoader.using(file_name='docassemble.ILAO:data/sources/il_courts.xlsx')
 ---
 code: |
@@ -84,9 +85,10 @@ code: |
    
   set_progress(60)
   nav.set_section('section_delivery')
-  if True:
+  if number_needing_notice == 0:
     skip_notice
   else:
+    skip_notice
     notice_intro
     if has_court_date:
       hearing_date
@@ -560,9 +562,46 @@ continue button field: who_needs_service
 question: |
   Who do you want ${ process_server.name.full(middle="full") } to serve?
 subquestion: |
-  Select parties below.
+  % if other_parties.number() == 1:
+  Select the ${ opposing_label } you want ${ process_server.name.full(middle="full") } to serve your court papers on.
+  % else:
+  Select the ${ opposing_label }s you want ${ process_server.name.full(middle="full") } to serve your court papers on.
+  % endif
+fields:
+  - Parties you want to serve: parties_to_serve
+    datatype: checkboxes
+    none of the above: False
+    code: service_list
+validation code: |
+  if parties_to_serve.all_false():
+    validation_error("You must select at least one party to serve.")
+
+---
+code: |
+  service_list = []
+  for party in other_parties:
+    service_list.append( { party.name.full(middle="full"): party.name.full(middle="full") } )
+---
+reconsider: True
+code: |
+  number_needing_notice = (users.number() - 1) + other_parties.number() - ( sum(1 for v in parties_to_serve.values() if v == True) )
+---
+#code: |
+#  service_parties = DAList("service_parties", elements = [])
+---
+sets: 
+  - service_parties[i].name.first
+  - service_parties[i].name.last
+  - service_parties[i].name.middle
+  - service_parties[i].name.suffix
+reconsider: True
+code: |
+  for defendant_name in service_list:
+    for party in other_parties:
+      if str(party.name.full(middle="full")) == str(defendant_name):
+        service_parties.append({ party} )  
+
   
-  Checkboxes will be added later with validation that requires at least 1 to be selected. 
 ---
 id: skip notice
 continue button field: skip_notice
@@ -571,6 +610,16 @@ question: |
 subquestion: |
   After program lets user select defendants, it will ask about notice and delivery options as needed.
 
+  DEBUG INFO:[NEWLINE]
+  Total users = ${users.number() }
+  
+  Total other_parties = ${ other_parties.number() }
+  
+  number of defendants/respondents needing service = ${ sum(1 for v in parties_to_serve.values() if v == True) }
+
+  number_needing_notice = ${number_needing_notice}
+
+  service_parties (new object!) = ${ service_parties }
 
 ---
 id: your contact information
