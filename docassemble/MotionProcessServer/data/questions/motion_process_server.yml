@@ -577,6 +577,7 @@ validation code: |
     validation_error("You must select at least one party to serve.")
 
 ---
+reconsider: True
 code: |
   service_list = []
   for party in other_parties:
@@ -586,21 +587,14 @@ reconsider: True
 code: |
   number_needing_notice = (users.number() - 1) + other_parties.number() - ( sum(1 for v in parties_to_serve.values() if v == True) )
 ---
-#code: |
-#  service_parties = DAList("service_parties", elements = [])
----
-sets: 
-  - service_parties[i].name.first
-  - service_parties[i].name.last
-  - service_parties[i].name.middle
-  - service_parties[i].name.suffix
 reconsider: True
 code: |
-  for defendant_name in service_list:
-    for party in other_parties:
-      if str(party.name.full(middle="full")) == str(defendant_name):
-        service_parties.append({ party} )  
+  defs_to_serve = [key for key, val in parties_to_serve.items() if val == True]
+  service_parties = DAList("service_parties", elements = [] )
 
+  for party in other_parties:
+    if party.name.full(middle="full") in defs_to_serve:
+      service_parties.append( party  )  
   
 ---
 id: skip notice
@@ -617,10 +611,13 @@ subquestion: |
   
   number of defendants/respondents needing service = ${ sum(1 for v in parties_to_serve.values() if v == True) }
 
+  service_parties (new object!) = ${ comma_and_list(service_parties) } 
+  
   number_needing_notice = ${number_needing_notice}
 
-  service_parties (new object!) = ${ service_parties }
+  delivery_parties = ${ comma_and_list(delivery_parties) }
 
+  temp_delivery_parties = ${ comma_and_list(temp_delivery_parties) }
 ---
 id: your contact information
 question: |
@@ -704,7 +701,7 @@ continue button field: notice_intro
 question: |
   Let the other parties in your case know about your motion
 subquestion: |
-  These are the other parties in this case: ${comma_and_list(delivery_parties)}.
+  These are the other parties in this case that you need to notify: ${comma_and_list(delivery_parties)}.
 
   You must let them know about your motion and when you will present it to the judge.
 
@@ -843,14 +840,25 @@ content: |
 ---
 reconsider: True
 code: |
-  delivery_parties = DAList("delivery_parties", elements = other_parties + users[1:])
+  defs_to_serve = [key for key, val in parties_to_serve.items() if val == True]
+---
+reconsider: True
+code: |
+  delivery_parties = DAList("delivery_parties", elements = other_parties + users[1:] )
+
+  temp_delivery_parties = delivery_parties
+  for i, party in enumerate( delivery_parties ):
+    if party.name.full(middle="full") in defs_to_serve:
+      temp_delivery_parties.pop( i ) 
+  delivery_parties = temp_delivery_parties
+    
 ---
 id: delivery intro
 continue button field: delivery_intro
 question: |
   Send your ${ form_name } to all other parties
 subquestion: |
-  These are the other parties in this case: ${comma_and_list(delivery_parties)}.
+  These are the other parties in this case that you need to notify: ${comma_and_list(delivery_parties)}.
 
   You must send a copy of your forms to each of them.
 
@@ -2595,14 +2603,18 @@ review:
       **Case number:**
       ${ case_number }   
 ---
-id: motion review screen
+id: Process server review screen
 section: Process server details
 event: section_motion
 question: |
-  Motion details
+  Process server details
 subquestion: |
   Edit your answers below.
 review:
+  - Edit: who_needs_service
+    button: |
+      **Who needs service:**
+      Will be added later...
   - Edit: motion_type
     button: |
       **Reason for motion:**
