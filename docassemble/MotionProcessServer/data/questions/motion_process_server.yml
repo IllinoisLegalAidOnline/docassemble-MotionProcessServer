@@ -21,6 +21,7 @@ objects:
   - delivery_parties: ALPeopleList.using(there_are_any=True)
   - delivery_parties[i].lawyer: ALIndividual
   - service_parties: ALPeopleList.using(there_are_any=True)
+  - other_parties_no_service: ALPeopleList.using(there_are_any=True)
   - court_list: ALCourtLoader.using(file_name='docassemble.ILAO:data/sources/il_courts.xlsx')
 ---
 code: |
@@ -612,12 +613,14 @@ subquestion: |
   number of defendants/respondents needing service = ${ sum(1 for v in parties_to_serve.values() if v == True) }
 
   service_parties (new object!) = ${ comma_and_list(service_parties) } 
+
+  other_parties_no_service (new object!) = ${ comma_and_list(other_parties_no_service) } 
   
   number_needing_notice = ${number_needing_notice}
 
   delivery_parties = ${ comma_and_list(delivery_parties) }
 
-  temp_delivery_parties = ${ comma_and_list(temp_delivery_parties) }
+#  temp_other_parties = ${ comma_and_list(temp_other_parties) }
 ---
 id: your contact information
 question: |
@@ -838,20 +841,30 @@ content: |
   [FILE hearing_information.png, 100%, Part of Notice of Court Date for Motion form]
 
 ---
-reconsider: True
-code: |
-  defs_to_serve = [key for key, val in parties_to_serve.items() if val == True]
+#reconsider: True
+#code: |
+#  defs_to_serve = [key for key, val in parties_to_serve.items() if val == True]
 ---
 reconsider: True
 code: |
-  delivery_parties = DAList("delivery_parties", elements = other_parties + users[1:] )
+  defs_to_serve = [key for key, val in parties_to_serve.items() if val == True]
+  other_parties_no_service = DAList("other_parties_no_service", elements = [] )
+  
+  for i, party in enumerate( other_parties ):
+    if party.name.full(middle="full") not in defs_to_serve:
+      other_parties_no_service.append( party ) 
 
-  temp_delivery_parties = delivery_parties
-  for i, party in enumerate( delivery_parties ):
-    if party.name.full(middle="full") in defs_to_serve:
-      temp_delivery_parties.pop( i ) 
-  delivery_parties = temp_delivery_parties
-    
+#  defs_to_serve = [key for key, val in parties_to_serve.items() if val == True]
+#  other_parties_no_service = DAList("other_parties_no_service", elements = other_parties )
+#  for i, party in enumerate( other_parties ):
+#    if party.name.full(middle="full") in defs_to_serve:
+#      other_parties_no_service.pop( i ) 
+
+#  other_parties_no_service = DAList("other_parties_no_service", elements = temp_other_parties )
+---
+reconsider: True
+code: |
+  delivery_parties = DAList("delivery_parties", elements = other_parties_no_service + users[1:] )
 ---
 id: delivery intro
 continue button field: delivery_intro
@@ -860,9 +873,7 @@ question: |
 subquestion: |
   These are the other parties in this case that you need to notify: ${comma_and_list(delivery_parties)}.
 
-  You must send a copy of your forms to each of them.
-
-  If someone in the case has a lawyer, send it to their lawyer.
+  You must send a copy of your forms to each of them. If someone in the case has a lawyer, send it to their lawyer.
 
   **Note:** You must deliver your forms before the court date when you will present your motion to the judge.
 ---
