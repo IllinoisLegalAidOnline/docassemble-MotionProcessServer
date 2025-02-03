@@ -839,11 +839,6 @@ content: |
   We will add the courtroom address to your forms. To get the other information, contact your Circuit Clerk. You can look up how to contact them using [**Find Your Court**](https://www.illinoiscourts.gov/courts-directory/interactive-map/by-court-type/) on the Illinois Courts website.
   
   [FILE hearing_information.png, 100%, Part of Notice of Court Date for Motion form]
-
----
-#reconsider: True
-#code: |
-#  defs_to_serve = [key for key, val in parties_to_serve.items() if val == True]
 ---
 reconsider: True
 code: |
@@ -853,14 +848,6 @@ code: |
   for i, party in enumerate( other_parties ):
     if party.name.full(middle="full") not in defs_to_serve:
       other_parties_no_service.append( party ) 
-
-#  defs_to_serve = [key for key, val in parties_to_serve.items() if val == True]
-#  other_parties_no_service = DAList("other_parties_no_service", elements = other_parties )
-#  for i, party in enumerate( other_parties ):
-#    if party.name.full(middle="full") in defs_to_serve:
-#      other_parties_no_service.pop( i ) 
-
-#  other_parties_no_service = DAList("other_parties_no_service", elements = temp_other_parties )
 ---
 reconsider: True
 code: |
@@ -1753,38 +1740,6 @@ review:
     button: |
       **Party label:**
       ${ party_label }
-  - Edit: users.revisit
-    button: |
-      **Your party: (Edit to change name, lawyer, address, and delivery info)**
-
-      % for my_var in users:
-        * ${ my_var.name.full(middle="full") }
-      % endfor
-  - Edit: anyone_opposing
-    button: |
-      % if party_label == "plaintiff":
-      **Any defendants?**
-      ${word(yesno(anyone_opposing))}
-      % else:
-      **Any respondents?**
-      ${word(yesno(anyone_opposing))}
-      % endif
-    show if: (party_label == 'plaintiff' or party_label == 'petitioner')
-  - Edit: other_parties.revisit
-    button: |
-      **The other party: (Edit to change name, lawyer, address, and delivery info)**
-
-      % for my_var in other_parties:
-        * ${ my_var.name.full(middle="full") }
-      % endfor
-  - Edit: in_re_check
-    button: |
-      **Does the court case have "In re:" in the name?**  
-      ${word(yesno(in_re_check))}
-  - Edit: in_re_label
-    button: |
-      **In re:** ${in_re_label}
-    show if: in_re_check
   - Edit: 
       - trial_court_index
       - recompute:
@@ -1819,144 +1774,46 @@ review:
     button: |
       **Case number:**
       ${ case_number }   
-  - Edit: motion_type
+  - Edit: users.revisit
     button: |
-      **Reason for motion:**
-      ${ motion_type }
-  - Edit: motion_summary
-    button: |
-      **Motion title:**
-      ${ motion_summary }
-    show if: motion_type == "Something else"
-  - Edit: motion_body
-    button: |
-      **Motion text:**
-      ${ motion_body }
-    show if: motion_type == "Something else"
-  - Edit: motion_additional_page
-    button: |
-      **Do you want to add a second page to your motion?**  
-      ${word(yesno(motion_additional_page))}
-    show if: motion_type == "Something else"
-  - Edit: additional_motion_body
-    button: |
-      **Additional motion text:**
-      ${ additional_motion_body }
-    show if: (motion_additional_page and motion_type == "Something else")
-  - Edit: reschedule_date
-    button: |
-      **Original court date on:**
-      ${ reschedule_date } at ${ format_time(reschedule_time, "h:mm a") }
-    show if: motion_type == "Reschedule a court date"
-  - Edit: court_date_reason
-    button: |
-      **Original court date reason:**
-      ${ court_date_reason }
-    show if: motion_type == "Reschedule a court date"
-    
-  - Edit: continue_reason_type
-    button: |
-      **Reschedule for witness, document, evidence, or other:**
-      ${ continue_reason_type }
-    show if: (motion_type == "Reschedule a court date")
-  - Edit: continue_reason_text
-    button: |
-      **You need to reschedule because:**
-      ${ continue_reason_text }
-    show if: (motion_type == "Reschedule a court date" and continue_reason_type == "Other")
+      **Your party: (Edit to change name, lawyer, address, and delivery info)**
 
-  - Edit: witness.name.first
+      % for my_var in users:
+        * ${ my_var.name.full(middle="full") }
+      % endfor
+  - Edit: other_parties.revisit
     button: |
-      **Your witness:**
-      ${ witness.name.full(middle='full') }    
-    show if: (motion_type == "Reschedule a court date" and continue_reason_type == "Witness unavailable")
-  - Edit: know_witness_address
-    button: |
-      **Do you know the witness's address?**
-      ${ word(yesno(know_witness_address)) }    
-    show if: (motion_type == "Reschedule a court date" and continue_reason_type == "Witness unavailable")
-  - Edit: witness.address.address
-    button: |
-      **Witness address:**
-      ${ witness.address.on_one_line(bare=True) }    
-    show if: (motion_type == "Reschedule a court date" and continue_reason_type == "Witness unavailable" and know_witness_address == True)
-  - Edit: no_witness_reason
-    button: |
-      **Why ${ witness.name.full(middle="full") } can't make your court date?**
-      % if no_witness_reason == "location":
-      ${ "I cannot find the witness." }
-      % else:
-      ${ "The witness cannot come to court on that date." }
-      % endif          
-    show if: (motion_type == "Reschedule a court date" and continue_reason_type == "Witness unavailable")
-  - Edit: find_witness_effort
-    button: |
-      **What have you done to try to find the witness's address?**
-      ${ find_witness_effort }    
-    show if: (motion_type == "Reschedule a court date" and continue_reason_type == "Witness unavailable" and (know_witness_address == False or no_witness_reason == "unavailable"))
-  - Edit: document_description
-    button: |
-      **Your document:**
-      ${ document_description }    
-    show if: (motion_type == "Reschedule a court date" and continue_reason_type == "Document unavailable")
-  - Edit: evidence_description
-    button: |
-      **Your evidence:**
-      ${ evidence_description }    
-    show if: (motion_type == "Reschedule a court date" and continue_reason_type == "Evidence unavailable")
-    
-  - Edit: evidence_shows
-    button: |
-      **What the evidence will show:**
-      ${ evidence_shows }    
-    show if: (motion_type == "Reschedule a court date" and continue_reason_type != "Other")
-  - Edit: due_diligence_effort
-    button: |
-      % if continue_reason_type == "Witness unavailable":
-      **How did you try to get ${ witness.name.full(middle="full") } to testify on ${ reschedule_date }?**
-      % elif continue_reason_type == "Document unavailable":
-      **How did you try to get the document to court on ${ reschedule_date }?**
-      % else:
-      **How did you try to get the evidence to court on ${ reschedule_date }?**
-      % endif
-      ${ due_diligence_effort }    
-    show if: (motion_type == "Reschedule a court date" and continue_reason_type != "Other")
-  - Edit: why_not_enough_time
-    button: |
-      % if continue_reason_type == "Witness unavailable":
-      **Why you need more time to get missing witness:**
-      % elif continue_reason_type == "Document unavailable":
-      **Why you need more time to get missing document:**
-      % else:
-      **Why you need more time to get missing evicence:**
-      % endif
-      ${ why_not_enough_time }    
-    show if: (motion_type == "Reschedule a court date" and continue_reason_type != "Other")
+      **The other party: (Edit to change name, lawyer, address, and delivery info)**
 
-  - Edit: unfinished_task
+      % for my_var in other_parties:
+        * ${ my_var.name.full(middle="full") }
+      % endfor
+  - Edit: in_re_check
     button: |
-      **What you need more time to do:**
-      ${ unfinished_task }
-    show if: motion_type == "Extend a deadline"    
-  - Edit: current_deadline
+      **Does the court case have "In re:" in the name?**  
+      ${word(yesno(in_re_check))}
+  - Edit: in_re_label
     button: |
-      **Current deadline:**
-      ${ current_deadline }
-    show if: motion_type == "Extend a deadline"    
-  - Edit: new_deadline
+      **In re:** ${in_re_label}
+    show if: in_re_check
+    
+  - Edit: process_server.name.first
     button: |
-      **New deadline:**
-      ${ new_deadline }
-    show if: motion_type == "Extend a deadline"    
-  - Edit: extension_reason
+      **Process server name:**
+      ${ process_server.name.full(middle="full") }
+  - Edit: process_server.address.address
     button: |
-      **You need more time because:**
-      ${ extension_reason }
-    show if: motion_type == "Extend a deadline"        
-  - Edit: e_signature
+      **Process server address:**
+      ${ process_server.address.on_one_line(bare=True) }
+  - Edit: process_server_reason
     button: |
-      **Do you want to add your e-signature to your forms?**
-      ${ word(yesno(e_signature)) }
+      **Reason why you want to use a process server:**
+      ${ process_server_reason }
+  - Edit: who_needs_service
+    button: |
+      **Who needs service by a process server:**
+      ${ comma_and_list(service_parties) } 
+      
   - Edit: has_court_date
     button: |
       **Do you already have a court date for your motion from the clerk?**
@@ -2019,6 +1876,10 @@ review:
       **Your email:**
       ${ users[0].email }
     show if: users[0].has_email_address
+  - Edit: e_signature
+    button: |
+      **Do you want to add your e-signature to your forms?**
+      ${ word(yesno(e_signature)) }
 ---
 #needs: yes_no_unknown
 id: delivery party review screen
@@ -2149,38 +2010,6 @@ review:
     button: |
       **Party label:**
       ${ party_label }
-  - Edit: users.revisit
-    button: |
-      **Your party: (Edit to change name, lawyer, address, and delivery info)**
-
-      % for my_var in users:
-        * ${ my_var.name.full(middle="full") }
-      % endfor
-  - Edit: anyone_opposing
-    button: |
-      % if party_label == "plaintiff":
-      **Any defendants?**
-      ${word(yesno(anyone_opposing))}
-      % else:
-      **Any respondents?**
-      ${word(yesno(anyone_opposing))}
-      % endif
-    show if: (party_label == 'plaintiff' or party_label == 'petitioner')
-  - Edit: other_parties.revisit
-    button: |
-      **The other party: (Edit to change name, lawyer, address, and delivery info)**
-
-      % for my_var in other_parties:
-        * ${ my_var.name.full(middle="full") }
-      % endfor
-  - Edit: in_re_check
-    button: |
-      **Does the court case have "In re:" in the name?**  
-      ${word(yesno(in_re_check))}
-  - Edit: in_re_label
-    button: |
-      **In re:** ${in_re_label}
-    show if: in_re_check
   - Edit: 
       - trial_court_index
       - recompute:
@@ -2215,6 +2044,28 @@ review:
     button: |
       **Case number:**
       ${ case_number }   
+  - Edit: users.revisit
+    button: |
+      **Your party: (Edit to change name, lawyer, address, and delivery info)**
+
+      % for my_var in users:
+        * ${ my_var.name.full(middle="full") }
+      % endfor
+  - Edit: other_parties.revisit
+    button: |
+      **The other party: (Edit to change name, lawyer, address, and delivery info)**
+
+      % for my_var in other_parties:
+        * ${ my_var.name.full(middle="full") }
+      % endfor
+  - Edit: in_re_check
+    button: |
+      **Does the court case have "In re:" in the name?**  
+      ${word(yesno(in_re_check))}
+  - Edit: in_re_label
+    button: |
+      **In re:** ${in_re_label}
+    show if: in_re_check
 ---
 id: Process server review screen
 section: Process server details
@@ -2224,148 +2075,22 @@ question: |
 subquestion: |
   Edit your answers below.
 review:
+  - Edit: process_server.name.first
+    button: |
+      **Process server name:**
+      ${ process_server.name.full(middle="full") }
+  - Edit: process_server.address.address
+    button: |
+      **Process server address:**
+      ${ process_server.address.on_one_line(bare=True) }
+  - Edit: process_server_reason
+    button: |
+      **Reason why you want to use a process server:**
+      ${ process_server_reason }
   - Edit: who_needs_service
     button: |
-      **Who needs service:**
-      Will be added later...
-  - Edit: motion_type
-    button: |
-      **Reason for motion:**
-      ${ motion_type }
-  - Edit: motion_summary
-    button: |
-      **Motion title:**
-      ${ motion_summary }
-    show if: motion_type == "Something else"
-  - Edit: motion_body
-    button: |
-      **Motion text:**
-      ${ motion_body }
-    show if: motion_type == "Something else"
-  - Edit: motion_additional_page
-    button: |
-      **Do you want to add a second page to your motion?**  
-      ${word(yesno(motion_additional_page))}
-    show if: motion_type == "Something else"
-  - Edit: additional_motion_body
-    button: |
-      **Additional motion text:**
-      ${ additional_motion_body }
-    show if: (motion_additional_page and motion_type == "Something else")
-  - Edit: reschedule_date
-    button: |
-      **Original court date on:**
-      ${ reschedule_date } at ${ format_time(reschedule_time, "h:mm a") }
-    show if: motion_type == "Reschedule a court date"
-  - Edit: court_date_reason
-    button: |
-      **Original court date reason:**
-      ${ court_date_reason }
-    show if: motion_type == "Reschedule a court date"
-    
-  - Edit: continue_reason_type
-    button: |
-      **Reschedule for witness, document, evidence, or other:**
-      ${ continue_reason_type }
-    show if: (motion_type == "Reschedule a court date")
-  - Edit: continue_reason_text
-    button: |
-      **You need to reschedule because:**
-      ${ continue_reason_text }
-    show if: (motion_type == "Reschedule a court date" and continue_reason_type == "Other")
-
-  - Edit: witness.name.first
-    button: |
-      **Your witness:**
-      ${ witness.name.full(middle='full') }    
-    show if: (motion_type == "Reschedule a court date" and continue_reason_type == "Witness unavailable")
-  - Edit: know_witness_address
-    button: |
-      **Do you know the witness's address?**
-      ${ word(yesno(know_witness_address)) }    
-    show if: (motion_type == "Reschedule a court date" and continue_reason_type == "Witness unavailable")
-  - Edit: witness.address.address
-    button: |
-      **Witness address:**
-      ${ witness.address.on_one_line(bare=True) }    
-    show if: (motion_type == "Reschedule a court date" and continue_reason_type == "Witness unavailable" and know_witness_address == True)
-  - Edit: no_witness_reason
-    button: |
-      **Why ${ witness.name.full(middle="full") } can't make your court date?**
-      % if no_witness_reason == "location":
-      ${ "I cannot find the witness." }
-      % else:
-      ${ "The witness cannot come to court on that date." }
-      % endif          
-    show if: (motion_type == "Reschedule a court date" and continue_reason_type == "Witness unavailable")
-  - Edit: find_witness_effort
-    button: |
-      **What have you done to try to find the witness's address?**
-      ${ find_witness_effort }    
-    show if: motion_type == "Reschedule a court date" and continue_reason_type == "Witness unavailable" and know_witness_address == False
-  - Edit: document_description
-    button: |
-      **Your document:**
-      ${ document_description }    
-    show if: (motion_type == "Reschedule a court date" and continue_reason_type == "Document unavailable")
-  - Edit: evidence_description
-    button: |
-      **Your evidence:**
-      ${ evidence_description }    
-    show if: (motion_type == "Reschedule a court date" and continue_reason_type == "Evidence unavailable")
-    
-  - Edit: evidence_shows
-    button: |
-      **What the evidence will show:**
-      ${ evidence_shows }    
-    show if: (motion_type == "Reschedule a court date" and continue_reason_type != "Other")
-  - Edit: due_diligence_effort
-    button: |
-      % if continue_reason_type == "Witness unavailable":
-      **How did you try to get ${ witness.name.full(middle="full") } to testify on ${ reschedule_date }?**
-      % elif continue_reason_type == "Document unavailable":
-      **How did you try to get the document to court on ${ reschedule_date }?**
-      % else:
-      **How did you try to get the evidence to court on ${ reschedule_date }?**
-      % endif
-      ${ due_diligence_effort }    
-    show if: (motion_type == "Reschedule a court date" and continue_reason_type != "Other")
-  - Edit: why_not_enough_time
-    button: |
-      % if continue_reason_type == "Witness unavailable":
-      **Why you need more time to get missing witness:**
-      % elif continue_reason_type == "Document unavailable":
-      **Why you need more time to get missing document:**
-      % else:
-      **Why you need more time to get missing evicence:**
-      % endif
-      ${ why_not_enough_time }    
-    show if: (motion_type == "Reschedule a court date" and continue_reason_type != "Other")
-    
-  - Edit: unfinished_task
-    button: |
-      **What you need more time to do:**
-      ${ unfinished_task }
-    show if: motion_type == "Extend a deadline"    
-  - Edit: current_deadline
-    button: |
-      **Current deadline:**
-      ${ current_deadline }
-    show if: motion_type == "Extend a deadline"    
-  - Edit: new_deadline
-    button: |
-      **New deadline:**
-      ${ new_deadline }
-    show if: motion_type == "Extend a deadline"    
-  - Edit: extension_reason
-    button: |
-      **You need more time because:**
-      ${ extension_reason }
-    show if: motion_type == "Extend a deadline"        
-  - Edit: e_signature
-    button: |
-      **Do you want to add your e-signature to your forms?**
-      ${ word(yesno(e_signature)) }
+      **Who needs service by a process server:**
+      ${ comma_and_list(service_parties) } 
       
 ---
 id: delivery info review screen
@@ -2467,3 +2192,7 @@ review:
       **Your email:**
       ${ users[0].email }
     show if: users[0].has_email_address
+  - Edit: e_signature
+    button: |
+      **Do you want to add your e-signature to your forms?**
+      ${ word(yesno(e_signature)) }    
