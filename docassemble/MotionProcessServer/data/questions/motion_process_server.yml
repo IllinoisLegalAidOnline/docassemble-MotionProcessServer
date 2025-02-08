@@ -89,7 +89,7 @@ code: |
   if number_needing_notice == 0:
     skip_notice
   else:
-    skip_notice
+    #skip_notice
     notice_intro
     if has_court_date:
       hearing_date
@@ -154,7 +154,7 @@ question: |
 subquestion: |
   Welcome to Illinois Legal Aid Online's **Request to approve process server** Easy Form.
 
-  This program helps you ask the court for permission to use an unlicensed process server in your case. It will make a *Motion to Approve Process Server Who Is Not Licensed*.
+  This program helps you ask the court for permission to use an unlicensed process server in your case. It will make a *Motion to Approve Process Server Who is Not Licensed*.
 
   When you start a lawsuit, the complaint or petition, and a **{summons}**, must be properly delivered to whoever you are suing. To learn more, read ILAO's article about [**serving a summons**](https://www.illinoislegalaid.org/node/147221).
 field: sees_nav_bar
@@ -193,9 +193,9 @@ question: |
 subquestion: |
   A private process server is someone other than the sheriff who can serve court papers.
   
-  If you want to use someone who is not a licensed process server to serve the **{summons}** and complaint or petition on the defendants/respondents in your case, you must ask the judge for permission by filing a *Motion to Approve Process Server Who Is Not Licensed*.
+  If you want to use someone who is not a licensed process server to serve the **{summons}** and complaint or petition on the defendants/respondents in your case, you must ask the judge for permission by filing a *Motion to Approve Process Server Who is Not Licensed*.
   
-  You do not need permission to use the sheriff or a licensed process server to serve your court papers.
+  You do not need to ask the judge for permission to use the sheriff or a licensed process server to serve your court papers.
 ---
 terms: 
   - summons: |
@@ -210,7 +210,7 @@ subquestion: |
   
   You may need to schedule a court date for when the judge will hear your motion. The scheduling process is different depending on your location and case type. Check with your local circuit clerk for how to schedule a motion hearing.
   
-  Finally, you will need to send your *Motion* and *Notice of Court Date for Motion* forms to other parties in your case, if there are any.
+  Finally, you will need to send your *Motion to Approve Process Server Who is Not Licensed* and *Notice of Court Date for Motion* forms to other parties in your case, if there are any.
   
   To learn more, read the instructions you can download at the end of this program. 
 ---
@@ -218,7 +218,7 @@ id: want to use unlicensed process server
 question: |
   Do you want to use a process server who is unlicensed?
 subquestion: |
-  **Reminder:** You do not need to ask the court's permission if you want to use the sheriff or a licensed process server in this case.
+  **Reminder:** You do not need to ask the judge for permission if you want to use the sheriff or a licensed process server in this case.
 fields:
   - no label: want_unlicensed
     datatype: yesnoradio  
@@ -241,7 +241,7 @@ id: is server party in case
 question: |
   Is the person you want to be a process server a party in the court case?
 subquestion: |
-  The person can't be a plaintiff or defendant in the court case.
+  This means the person can't be a plaintiff, petitioner, defendant, or respondent in this court case. 
 fields:
   - no label: is_server_a_party
     datatype: yesnoradio  
@@ -283,7 +283,7 @@ id: is case already filed
 question: |
   Have you already filed the court case?
 subquestion: |
-  The Motion requires information you will receive from the court clerk when you file the case.
+  The *Motion to Approve Process Server Who is Not Licensed* requires information you receive from the court clerk when you file the case.
 fields:
   - no label: is_case_filed
     datatype: yesnoradio  
@@ -551,7 +551,7 @@ id: process server reason
 question: |
   Why are you asking to use an unlicensed process server?
 subquestion: |
-  The *Motion to Approve Process Server Who Is Not Licensed* has room for about 200 characters including spaces.
+  The *Motion to Approve Process Server Who is Not Licensed* has room for about 200 characters including spaces.
 fields:
   - I want to use an unlicensed process server because:: process_server_reason
     input type: area
@@ -588,6 +588,7 @@ reconsider: True
 code: |
   number_needing_notice = (users.number() - 1) + other_parties.number() - ( sum(1 for v in parties_to_serve.values() if v == True) )
 ---
+# builds service_parties
 reconsider: True
 code: |
   defs_to_serve = [key for key, val in parties_to_serve.items() if val == True]
@@ -600,6 +601,13 @@ code: |
 ---
 id: skip notice
 continue button field: skip_notice
+question: |
+  Skip notice and delivery for now
+subquestion: |
+  Since the other parties in this case all need service from the unlicensed process server, you do not need to notify them. This means you do not need to use a *Notice of Court Date for Motion* form or fill out the Proof of deliery section of your forms.
+---
+id: skip notice debug
+continue button field: skip_notice_debug
 question: |
   Skip notice and delivery for now
 subquestion: |
@@ -678,13 +686,13 @@ subquestion: |
 
   <div class="alert alert-info ilao-info" role="alert">
     <h6 class="alert-heading">What it means to sign your forms</h6>
-    <p>By signing your <i>Motion to Approve Process Server Who Is Not Licensed</i>, you are certifying that:</p>
+    <p>By signing your <i>Motion to Approve Process Server Who is Not Licensed</i>, you are certifying that:</p>
     <p><ul>
       <li>Everything on the forms is true and correct, and</li>
       <li>You understand that making a false statement on the form is perjury, which can result in criminal penalties.</li>
     </ul></p>
   <p>See the <a href="https://www.ilga.gov/legislation/ilcs/documents/073500050k1-109.htm"><b>Code of Civil Procedure, 735 ILCS 5/1-109</b></a> for more information.</p>
-    <p>By signing your <i>Notice of Court Date for Motion</i>, you are certifying that:</p>
+    <p>By signing your <i>Notice of Court Date for Motion</i> (if needed), you are certifying that:</p>
     <p><ul>
       <li>You read the document,</li>
       <li>You believe it to be true and correct, and</li>
@@ -706,11 +714,11 @@ question: |
 subquestion: |
   These are the other parties in this case that you need to notify: ${comma_and_list(delivery_parties)}.
 
-  You must let them know about your motion and when you will present it to the judge.
+  You must let them know about your Motion and when you will present it to the judge.
 
   If someone in the case has a lawyer, you must let their lawyer know.
 
-  **Note:** You must deliver your forms before the court date when you will present your motion to the judge.
+  **Note:** You must deliver your forms before the court date when you will present your Motion to the judge.
 ---
 depends on:
   - trial_court_index
@@ -790,7 +798,7 @@ question: |
 subquestion: |
   Your court date could be in person, by phone, or by video. If your court date is by phone or video, it is called a "Remote Appearance."
   
-  Enter the court date details below. If the clerk did not give you this information yet, leave it blank. You can add it to the *Notice of Court Date for Motion* after you file your *Motion*.
+  Enter the court date details below. If the clerk or e-filing system did not give you this information yet, leave it blank. You can add it to the *Notice of Court Date for Motion* after you file your *Motion*.
   
   **Note:** Be sure to add the court date information to your *Notice of Court Date for Motion* before you send it to other parties in your case.
 
@@ -840,6 +848,7 @@ content: |
   
   [FILE hearing_information.png, 100%, Part of Notice of Court Date for Motion form]
 ---
+# builds other_parties_no_service
 reconsider: True
 code: |
   defs_to_serve = [key for key, val in parties_to_serve.items() if val == True]
@@ -862,7 +871,7 @@ subquestion: |
 
   You must send a copy of your forms to each of them. If someone in the case has a lawyer, send it to their lawyer.
 
-  **Note:** You must deliver your forms before the court date when you will present your motion to the judge.
+  **Note:** You must deliver your forms before the court date when you will present your Motion to the judge.
 ---
 id: has lawyer
 generic object: ALIndividual
@@ -1006,6 +1015,12 @@ fields:
     required: False
   - US mail or delivery company (like UPS or FedEx): users[i].mail_delivery
     datatype: yesnowide
+  - Address or intersection of mailbox or delivery company: users[i].delivery_mail_address
+    maxlength: 40
+    show if: 
+      variable: users[i].mail_delivery
+      is: True
+    required: False
   - City of mailbox or delivery company: users[i].delivery_mail_city
     maxlength: 30
     show if: 
@@ -1100,6 +1115,12 @@ fields:
     required: False
   - US mail or delivery company (like UPS or FedEx): other_parties[i].mail_delivery
     datatype: yesnowide
+  - Address or intersection of mailbox or delivery company: other_parties[i].delivery_mail_address
+    maxlength: 40
+    show if: 
+      variable: other_parties[i].mail_delivery
+      is: True
+    required: False
   - City of mailbox or delivery company: other_parties[i].delivery_mail_city
     maxlength: 30
     show if: 
@@ -1220,7 +1241,7 @@ subquestion: |
   
   Your forms are ready. View and download your forms below. Click **Make changes** to fix any mistakes.
 
-  This program does not file your Motion with the court or deliver it to other parties in your case. You will need to do this yourself. Learn about [**e-filing in Illinois**](https://www.illinoiscourts.gov/eservices/information-for-filers-without-lawyers).
+  This program **does not file** your Motion with the court or deliver it to other parties in your case. You will need to do this yourself. Learn about [**e-filing in Illinois**](https://www.illinoiscourts.gov/eservices/information-for-filers-without-lawyers).
 
   ${ action_button_html(url_action('review_answers'), label=':edit: Make changes', color='success', size="md") }
   
@@ -1230,7 +1251,7 @@ subquestion: |
 
   ${ al_user_bundle.send_button_html(show_editable_checkbox=False) }
 
-  **Note:** This program does not file your Motion with the court or deliver it to other parties in your case. Learn about [**e-filing in Illinois**](https://www.illinoiscourts.gov/eservices/information-for-filers-without-lawyers).
+  **Note:** This program **does not file** your Motion with the court or deliver it to other parties in your case. Learn about [**e-filing in Illinois**](https://www.illinoiscourts.gov/eservices/information-for-filers-without-lawyers).
   
   Thank you for using ILAO Easy Forms!
 under: |
@@ -1242,9 +1263,14 @@ under: |
   ${ action_button_html(interview_url(i="docassemble.ILAO:feedback.yml", easy_form_interview=ilao_easy_form_url, easy_form_title=ilao_easy_form_title, easy_form_page=current_context().question_id, easy_form_variable=current_context().variable, local=False,reset=1), label=':comment: Was this program helpful?', color="#181c36", size="md", new_window=True) }
 ---
 generic object: ALDocumentBundle
+template: x.get_email_copy
+content: |
+  Send a copy of your forms to your email
+---
+generic object: ALDocumentBundle
 template: x.send_email_template
 subject: |
-  Motion forms
+  Request to approve process server forms
 content: |
   Your forms are attached.
   
@@ -1315,7 +1341,7 @@ objects:
 
 ---
 objects:
-  - motion_single_pdf_bundle: ALDocumentBundle.using(elements=[motion_attachment, additional_delivery_bundle], filename="motion.pdf", title="Motion")
+  - motion_single_pdf_bundle: ALDocumentBundle.using(elements=[motion_attachment, additional_delivery_bundle], filename="motion.pdf", title="Motion to Approve Process Server Who is Not Licensed")
   - notice_single_pdf_bundle: ALDocumentBundle.using(elements=[notice_attachment, additional_delivery_bundle], filename="notice.pdf", title="Notice of Court Date for Motion")
 
 ---
@@ -1360,7 +1386,7 @@ attachment:
           % if in_re_check:
           ${ "" }
           % else:
-          ${list_defendants(users.full_names(), other_parties.full_names(), anyone_opposing, party_label)}
+          ${other_parties.full_names()}
           % endif
 
       - "user__1": ${ users[0].name.full(middle="full") }
@@ -1375,15 +1401,13 @@ attachment:
       - "case_number__1": ${ case_number }
       - "case_number__2": ${ case_number }
       - "case_number__3": ${ case_number }
-      - "case_number__4": ${ case_number }
       - "e_sign_name__1": ${ users[0].name.full(middle="full") if e_signature else '' }
       - "e_sign_name__2": ${ users[0].name.full(middle="full") if e_signature else '' }
       - "ps_name": ${ process_server.name.full(middle="full") }
       - "ps_address": ${ process_server.address.on_one_line(bare=True) }
-      - "service_parties": ${ comma_and_list(service_parties) }
+      - "service_parties": ${ comma_and_list( service_parties ) }
       - "ps_reason": ${ process_server_reason }
       - "docs_to_deliver": ${ "Motion to Approve Process Server Who is Not Licensed" }
-
       
       - "delivery_party1_name_full": | 
           % if delivery_parties[0].is_represented:
@@ -1407,7 +1431,7 @@ attachment:
           % if delivery_parties[0].delivery_mail_address != "" and delivery_parties[0].delivery_mail_city != "" and delivery_parties[0].delivery_mail_state != "":
           ${delivery_parties[0].delivery_mail_address }, ${delivery_parties[0].delivery_mail_city}, ${ state_name(delivery_parties[0].delivery_mail_state) }
           % elif delivery_parties[0].delivery_mail_address != "" and delivery_parties[0].delivery_mail_city != "":
-          ${delivery_parties[0].delivery_mail_address }, {delivery_parties[0].delivery_mail_city}
+          ${delivery_parties[0].delivery_mail_address }, ${delivery_parties[0].delivery_mail_city}
           % elif delivery_parties[0].delivery_mail_address != "" and delivery_parties[0].delivery_mail_state != "":
           ${delivery_parties[0].delivery_mail_address }, ${ state_name(delivery_parties[0].delivery_mail_state) }
           % elif delivery_parties[0].delivery_mail_city != "" and delivery_parties[0].delivery_mail_state != "":
@@ -1450,7 +1474,7 @@ attachment:
           % if delivery_parties[1].delivery_mail_address != "" and delivery_parties[1].delivery_mail_city != "" and delivery_parties[1].delivery_mail_state != "":
           ${delivery_parties[1].delivery_mail_address }, ${delivery_parties[1].delivery_mail_city}, ${ state_name(delivery_parties[1].delivery_mail_state) }
           % elif delivery_parties[1].delivery_mail_address != "" and delivery_parties[1].delivery_mail_city != "":
-          ${delivery_parties[1].delivery_mail_address }, {delivery_parties[1].delivery_mail_city}
+          ${delivery_parties[1].delivery_mail_address }, ${delivery_parties[1].delivery_mail_city}
           % elif delivery_parties[1].delivery_mail_address != "" and delivery_parties[1].delivery_mail_state != "":
           ${delivery_parties[1].delivery_mail_address }, ${ state_name(delivery_parties[1].delivery_mail_state) }
           % elif delivery_parties[1].delivery_mail_city != "" and delivery_parties[1].delivery_mail_state != "":
@@ -1506,12 +1530,14 @@ attachment:
       
       - "is_delivery_party1_electronic": ${ True if x.knows_delivery_method and ( x.efm_delivery or x.email_delivery ) else '' }
       - "is_delivery_party1_not_electronic": ${ True if x.knows_delivery_method and ( x.mail_delivery or x.hand_delivery or x.jail_delivery ) else '' }
+      - "delivery_party1_mail_city": ${ x.delivery_mail_city if x.knows_delivery_method and x.mail_delivery else '' }
+      - "delivery_party1_mail_state": ${ state_name(x.delivery_mail_state) if x.knows_delivery_method and x.mail_delivery else '' }        
       - "delivery_party1_mail_location": |
           % if x.knows_delivery_method and x.mail_delivery:
           % if x.delivery_mail_address != "" and x.delivery_mail_city != "" and x.delivery_mail_state != "":
           ${x.delivery_mail_address }, ${x.delivery_mail_city}, ${ state_name(x.delivery_mail_state) }
           % elif x.delivery_mail_address != "" and x.delivery_mail_city != "":
-          ${x.delivery_mail_address }, {x.delivery_mail_city}
+          ${x.delivery_mail_address }, ${x.delivery_mail_city}
           % elif x.delivery_mail_address != "" and x.delivery_mail_state != "":
           ${x.delivery_mail_address }, ${ state_name(x.delivery_mail_state) }
           % elif x.delivery_mail_city != "" and x.delivery_mail_state != "":
@@ -1550,12 +1576,16 @@ attachment:
       
       - "is_delivery_party2_electronic": ${ True if x.second_person.knows_delivery_method and ( x.second_person.efm_delivery or x.second_person.email_delivery ) else '' }
       - "is_delivery_party2_not_electronic": ${ True if x.second_person.knows_delivery_method and ( x.second_person.mail_delivery or x.second_person.hand_delivery or x.second_person.jail_delivery ) else '' }
+
+      - "delivery_party2_mail_city": ${ x.second_person.delivery_mail_city if x.second_person.knows_delivery_method and x.second_person.mail_delivery else '' }
+      - "delivery_party2_mail_state": ${ state_name(x.second_person.delivery_mail_state) if x.second_person.knows_delivery_method and x.second_person.mail_delivery else '' }
+       
       - "delivery_party2_mail_location": |
           % if x.second_person.knows_delivery_method and x.second_person.mail_delivery:
           % if x.second_person.delivery_mail_address != "" and x.second_person.delivery_mail_city != "" and x.second_person.delivery_mail_state != "":
           ${x.second_person.delivery_mail_address }, ${x.second_person.delivery_mail_city}, ${ state_name(x.second_person.delivery_mail_state) }
           % elif x.second_person.delivery_mail_address != "" and x.second_person.delivery_mail_city != "":
-          ${x.second_person.delivery_mail_address }, {x.second_person.delivery_mail_city}
+          ${x.second_person.delivery_mail_address }, ${x.second_person.delivery_mail_city}
           % elif x.second_person.delivery_mail_address != "" and x.second_person.delivery_mail_state != "":
           ${x.second_person.delivery_mail_address }, ${ state_name(x.second_person.delivery_mail_state) }
           % elif x.second_person.delivery_mail_city != "" and x.second_person.delivery_mail_state != "":
@@ -1606,7 +1636,7 @@ attachment:
           % if in_re_check:
           ${ "" }
           % else:
-          ${list_defendants(users.full_names(), other_parties.full_names(), anyone_opposing, party_label)}
+          ${other_parties.full_names()}
           % endif
       - "user__1": ${ users[0].name.full(middle="full") }
       - "user__2": ${ users[0].name.full(middle="full") }
@@ -1721,7 +1751,7 @@ attachment:
           % if in_re_check:
           ${ "" }
           % else:
-          ${list_defendants(users.full_names(), other_parties.full_names(), anyone_opposing, party_label)}
+          ${other_parties.full_names()}
           % endif
       - "case_number__1": ${ case_number }
       - "ps_name": ${ process_server.name.full(middle="full") }
