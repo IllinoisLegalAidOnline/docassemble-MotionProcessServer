@@ -77,6 +77,7 @@ code: |
   other_parties.gather()
   if in_re_check == True:
     in_re_label
+  who_needs_service
   service_summary
   
   set_progress(30)
@@ -548,7 +549,7 @@ subquestion: |
   
   Total other_parties = ${ other_parties.number() }
 
-  NEW! new_service_parties = ${comma_and_list(new_service_parties)}
+  NEW! new_service_parties = ${ comma_and_list(new_service_parties.full_names() ) }
   
   UPDATED: delivery_parties = ${ comma_and_list(delivery_parties) }
 
@@ -603,36 +604,38 @@ subquestion: |
   Select the ${ opposing_label }s you want ${ process_server.name.full(middle="full") } to serve your court papers on.
   % endif
 fields:
-  - Parties you want to serve: parties_to_serve
+  - Parties you want to serve: other_parties.needs_service
     datatype: checkboxes
     none of the above: False
     code: service_list
-validation code: |
-  if parties_to_serve.all_false():
-    validation_error("You must select at least one party to serve.")
+#validation code: |
+#  if parties_to_serve.all_false():
+#      validation_error("You must select at least one party to serve.")
+#  if parties_to_serve.all_false():
 
 ---
 reconsider: True
 code: |
   service_list = []
   for party in other_parties:
-    service_list.append( { party.name.full(middle="full"): party.name.full(middle="full") } )
+    service_list.append( { True : party.name.full(middle="full") } )
+#    service_list.append( { party.name.full(middle="full"): party.name.full(middle="full") } )
 ---
-reconsider: True
-code: |
-  number_needing_notice = (users.number() - 1) + other_parties.number() - ( sum(1 for v in parties_to_serve.values() if v == True) )
-
+#reconsider: True
+#code: |
+#  number_needing_notice = (users.number() - 1) + other_parties.number() - ( sum(1 for v in parties_to_serve.values() if v == True) )
+#
 
 ---
 # builds service_parties
-reconsider: True
-code: |
-  defs_to_serve = [key for key, val in parties_to_serve.items() if val == True]
-  service_parties = DAList("service_parties", elements = [] )
-
-  for party in other_parties:
-    if party.name.full(middle="full") in defs_to_serve:
-      service_parties.append( party  )  
+#reconsider: True
+#code: |
+#  defs_to_serve = [key for key, val in parties_to_serve.items() if val == True]
+#  service_parties = DAList("service_parties", elements = [] )
+#
+#  for party in other_parties:
+#    if party.name.full(middle="full") in defs_to_serve:
+#      service_parties.append( party  )  
   
 ---
 id: skip notice
@@ -656,17 +659,19 @@ subquestion: |
   
   Total other_parties = ${ other_parties.number() }
   
-  number of defendants/respondents needing service = ${ sum(1 for v in parties_to_serve.values() if v == True) }
-
   service_parties (new object!) = ${ comma_and_list(service_parties) } 
 
-  other_parties_no_service (new object!) = ${ comma_and_list(other_parties_no_service) } 
-  
-  number_needing_notice = ${number_needing_notice}
 
   delivery_parties = ${ comma_and_list(delivery_parties) }
 
+#  number of defendants/respondents needing service = ${ sum(1 for v in parties_to_serve.values() if v == True) }
+#
 #  temp_other_parties = ${ comma_and_list(temp_other_parties) }
+#
+#  other_parties_no_service (new object!) = ${ comma_and_list(other_parties_no_service) } 
+#  
+#  number_needing_notice = ${number_needing_notice}
+
 ---
 id: your contact information
 question: |
@@ -887,14 +892,14 @@ content: |
   [FILE hearing_information.png, 100%, Part of Notice of Court Date for Motion form]
 ---
 # builds other_parties_no_service
-reconsider: True
-code: |
-  defs_to_serve = [key for key, val in parties_to_serve.items() if val == True]
-  other_parties_no_service = DAList("other_parties_no_service", elements = [] )
-  
-  for i, party in enumerate( other_parties ):
-    if party.name.full(middle="full") not in defs_to_serve:
-      other_parties_no_service.append( party ) 
+#reconsider: True
+#code: |
+#  defs_to_serve = [key for key, val in parties_to_serve.items() if val == True]
+#  other_parties_no_service = DAList("other_parties_no_service", elements = [] )
+#  
+#  for i, party in enumerate( other_parties ):
+#    if party.name.full(middle="full") not in defs_to_serve:
+#      other_parties_no_service.append( party ) 
 ---
 reconsider: True
 code: |
@@ -1379,7 +1384,8 @@ code: |
   notice_attachment.enabled = False
 
   # update this with a real test
-  if number_needing_notice > 0:
+  # if number_needing_notice > 0:
+  if delivery_parties.number() == 0:
     notice_single_pdf_bundle.enabled = True
     notice_attachment.enabled = True
 
