@@ -14,15 +14,13 @@ objects:
   - users: ALPeopleList.using(there_are_any=True)
   - users[i].lawyer: ALIndividual
   - users[i].hand_delivery_address: ALAddress
-  - other_parties: ALPeopleList.using(there_are_any=True, complete_attribute=['complete'])
+  - other_parties: ALPeopleList.using(there_are_any=True)
   - other_parties[i].lawyer: ALIndividual
   - other_parties[i].hand_delivery_address: ALAddress
   - process_server: ALIndividual
   - delivery_parties: ALPeopleList.using(there_are_any=True)
   - delivery_parties[i].lawyer: ALIndividual
   - service_parties: ALPeopleList.using(there_are_any=True)
-  - new_service_parties: ALPeopleList.using(there_are_any=True)
-  - other_parties_no_service: ALPeopleList.using(there_are_any=True)
   - court_list: ALCourtLoader.using(file_name='docassemble.ILAO:data/sources/il_courts.xlsx')
 ---
 code: |
@@ -77,7 +75,6 @@ code: |
   other_parties.gather()
   if in_re_check == True:
     in_re_label
-  service_summary
   
   set_progress(30)
   nav.set_section('section_motion')
@@ -85,14 +82,13 @@ code: |
   process_server.address.address
   process_server_reason
   who_needs_service
+  # service_summary
 
   set_progress(60)
   nav.set_section('section_delivery')
   if delivery_parties.number() == 0:
-  #if number_needing_notice == 0:
     skip_notice
   else:
-    #skip_notice
     notice_intro
     if has_court_date:
       hearing_date
@@ -196,13 +192,15 @@ question: |
 subquestion: |
   A private process server is someone other than the sheriff who can serve court papers.
   
-  If you want to use someone who is not a licensed process server to serve the **{summons}** and complaint or petition on the defendants/respondents in your case, you must ask the judge for permission by filing a *Motion to Approve Process Server Who is Not Licensed*.
+  If you want to use someone who is not a **{licensed private process server}** to serve the **{summons}** and complaint or petition on the defendants/respondents in your case, you must ask the judge for permission by filing a *Motion to Approve Process Server Who is Not Licensed*.
   
   You do not need to ask the judge for permission to use the sheriff or a licensed process server to serve your court papers.
 ---
 terms: 
   - summons: |
       A **summons** is an official notice of a lawsuit. It is given to a person or business so that they know they are being sued.
+  - licensed private process server: |
+      A **licensed private process server** is a licensed private detective or a registered employee of a licensed private detective agency. Licensed process servers are private businesses and charge a fee.
 ---
 id: whats next
 continue button field: whats_next
@@ -211,7 +209,7 @@ question: |
 subquestion: |
   After you download your Motion, you must file it with the court. This program **does not** file your ${ form_name } for you.
   
-  You may need to schedule a court date for when the judge will hear your motion. The scheduling process is different depending on your location and case type. Check with your local circuit clerk for how to schedule a motion hearing.
+  You may need to schedule a court date for when the judge will hear your Motion. The scheduling process is different depending on your location and case type. Check with your local circuit clerk for how to schedule a Motion hearing.
   
   Finally, you will need to send your *Motion to Approve Process Server Who is Not Licensed* and *Notice of Court Date for Motion* forms to other parties in your case, if there are any.
   
@@ -231,9 +229,9 @@ event: must_be_unlicensed
 question: |
   Sorry
 subquestion: |
-  You only need to file ask the court for approval if the person you want to be a process server is not licensed.
+  You only need to ask the court for approval if the person you want to be a process server is not licensed.
   
-  If you want to serve the parties you are suing using the sheriff or a licensed process server, you do not need to file a motion.
+  If you want to serve the parties you are suing using the sheriff or a licensed process server, you do not need to file a Motion.
 
   Click **Back** if you made a mistake. Or you can talk with a lawyer to discuss your options. Use **[Get Legal Help](https://www.illinoislegalaid.org/get-legal-help)** to find free or low-cost legal services in your area.
 buttons:
@@ -451,19 +449,7 @@ subquestion: |
 fields:
   - "Anyone else?": other_parties.there_is_another
     datatype: yesnoradio
----
-id: needs service check
-generic object: ALIndividual
-question: |
-  Do you want to use the process server to serve ${ x.name.full(middle="full")}?
-fields:
-  - no label: x.needs_service
-    datatype: yesnoradio
----
-code: |
-  other_parties[i].name.first
-  other_parties[i].needs_service
-  other_parties[i].complete = True
+
 ---
 id: trial court county
 continue button field: case_county
@@ -535,24 +521,24 @@ content: |
   In this example, the case number is **2022 EXAMPLE 123**.
   
   [FILE case_number_example.png, 100%, Summons form showing case number]
----  
-id: service summary
-continue button field: service_summary
-question: |
-  DEBUG: testing service list using filters
-subquestion: |
-  After program lets user select defendants, it will ask about notice and delivery options as needed.
+--- 
 
-  DEBUG INFO:[NEWLINE]
-  Total users = ${users.number() }
-  
-  Total other_parties = ${ other_parties.number() }
+#
+#id: service summary
+#continue button field: service_summary
+#question: |
+#  DEBUG: testing service list using filters
+#subquestion: |
+#  After program lets user select defendants, it will ask about notice and delivery options as needed.
+#
+#  DEBUG INFO:[NEWLINE]
+#  Total users = ${users.number() }
+#  
+#  Total other_parties = ${ other_parties.number() }
+#  
+#  UPDATED: delivery_parties = ${ comma_and_list(delivery_parties) }
+#
 
-  NEW! new_service_parties = ${comma_and_list(new_service_parties)}
-  
-  UPDATED: delivery_parties = ${ comma_and_list(delivery_parties) }
-
-#  NEW! new_delivery_parties = ${ comma_and_list(new_delivery_parties)}
 ---
 id: process_server name
 sets:
@@ -586,12 +572,16 @@ question: |
   Why are you asking to use an unlicensed process server?
 subquestion: |
   The *Motion to Approve Process Server Who is Not Licensed* has room for about 200 characters including spaces.
+
+  For example, you could explain that the sheriff has been unable to serve the other parties in your case.
 fields:
   - I want to use an unlicensed process server because:: process_server_reason
     input type: area
     rows: 5
     maxlength: 200
 ---
+sets:
+  - other_parties[i].needs_service
 id: who needs service
 continue button field: who_needs_service
 question: |
@@ -603,51 +593,43 @@ subquestion: |
   Select the ${ opposing_label }s you want ${ process_server.name.full(middle="full") } to serve your court papers on.
   % endif
 fields:
-  - Parties you want to serve: parties_to_serve
-    datatype: checkboxes
-    none of the above: False
-    code: service_list
+  code: service_list
 validation code: |
-  if parties_to_serve.all_false():
+  party_selected = False
+  for party in other_parties:
+    if party.needs_service == True:
+      party_selected = True
+  if party_selected == False:
     validation_error("You must select at least one party to serve.")
-
 ---
 reconsider: True
 code: |
-  service_list = []
-  for party in other_parties:
-    service_list.append( { party.name.full(middle="full"): party.name.full(middle="full") } )
+  service_list = list()
+  for index in range(other_parties.number()):
+    service_list.append(
+      {"label": other_parties[ index ].name.full(middle='full'),
+       "field": "other_parties[" + str(index) + "].needs_service",
+       "datatype": "yesnowide",
+       "required": "False"
+       })
 ---
 reconsider: True
 code: |
-  number_needing_notice = (users.number() - 1) + other_parties.number() - ( sum(1 for v in parties_to_serve.values() if v == True) )
-
-
----
-# builds service_parties
-reconsider: True
-code: |
-  defs_to_serve = [key for key, val in parties_to_serve.items() if val == True]
-  service_parties = DAList("service_parties", elements = [] )
-
-  for party in other_parties:
-    if party.name.full(middle="full") in defs_to_serve:
-      service_parties.append( party  )  
-  
+  service_parties = other_parties.filter('service_parties', has_attribute=True)
 ---
 id: skip notice
 continue button field: skip_notice
 question: |
   Skip notice and delivery for now
 subquestion: |
-  Since the other parties in this case all need service from the unlicensed process server, you do not need to notify them.
+  Since the other parties in this case all need service from the unlicensed process server, you do not need to notify them about your *Motion to Approve Process Server Who is Not Licensed*.
   
   This means you do not need to use a *Notice of Court Date for Motion* form or fill out the Proof of deliery section of your forms.
 ---
 id: skip notice debug
 continue button field: skip_notice_debug
 question: |
-  Skip notice and delivery for now
+  Skip notice and delivery for now DEBUG
 subquestion: |
   After program lets user select defendants, it will ask about notice and delivery options as needed.
 
@@ -656,17 +638,19 @@ subquestion: |
   
   Total other_parties = ${ other_parties.number() }
   
-  number of defendants/respondents needing service = ${ sum(1 for v in parties_to_serve.values() if v == True) }
-
   service_parties (new object!) = ${ comma_and_list(service_parties) } 
 
-  other_parties_no_service (new object!) = ${ comma_and_list(other_parties_no_service) } 
-  
-  number_needing_notice = ${number_needing_notice}
 
   delivery_parties = ${ comma_and_list(delivery_parties) }
 
+#  number of defendants/respondents needing service = ${ sum(1 for v in parties_to_serve.values() if v == True) }
+#
 #  temp_other_parties = ${ comma_and_list(temp_other_parties) }
+#
+#  other_parties_no_service (new object!) = ${ comma_and_list(other_parties_no_service) } 
+#  
+#  number_needing_notice = ${number_needing_notice}
+
 ---
 id: your contact information
 question: |
@@ -805,9 +789,9 @@ id: hearing scheduled
 question: |
   Do you already have a court date scheduled for this motion?
 subquestion: |
-  In some counties, the circuit clerk can give you a hearing date before you file your motion. In other counties, you will get a hearing date when you file your motion. If you have this information now, you can add it to your forms.
+  In some counties, the circuit clerk can give you a hearing date before you file your Motion. In other counties, you will get a hearing date when you file your Motion. If you have this information now, you can add it to your forms.
   
-  If the clerk gives you the hearing date after you file your *Motion*, you can add it to your *Notice of Court Date for Motion* later. 
+  If the clerk gives you the hearing date after you file your *Motion to Approve Process Server Who is Not Licensed*, you can add it to your *Notice of Court Date for Motion* later. 
   
   **Note:** Be sure to add the hearing information to your *Notice of Court Date for Motion* before you send it to other parties in your case.
 fields:
@@ -836,7 +820,7 @@ question: |
 subquestion: |
   Your court date could be in person, by phone, or by video. If your court date is by phone or video, it is called a "Remote Appearance."
   
-  Enter the court date details below. If the clerk or e-filing system did not give you this information yet, leave it blank. You can add it to the *Notice of Court Date for Motion* after you file your *Motion*.
+  Enter the court date details below. If the clerk or e-filing system did not give you this information yet, leave it blank. You can add it to the *Notice of Court Date for Motion* after you file your *Motion to Approve Process Server Who is Not Licensed*.
   
   **Note:** Be sure to add the court date information to your *Notice of Court Date for Motion* before you send it to other parties in your case.
 
@@ -886,28 +870,9 @@ content: |
   
   [FILE hearing_information.png, 100%, Part of Notice of Court Date for Motion form]
 ---
-# builds other_parties_no_service
 reconsider: True
 code: |
-  defs_to_serve = [key for key, val in parties_to_serve.items() if val == True]
-  other_parties_no_service = DAList("other_parties_no_service", elements = [] )
-  
-  for i, party in enumerate( other_parties ):
-    if party.name.full(middle="full") not in defs_to_serve:
-      other_parties_no_service.append( party ) 
----
-reconsider: True
-code: |
-  new_service_parties = other_parties.filter('new_service_parties', needs_service=True)
----
-reconsider: True
-code: |
-  delivery_parties = DAList("delivery_parties", elements = other_parties.filter('new_service_parties', needs_service=False) + users[1:] )
-#  delivery_parties = DAList("delivery_parties", elements = other_parties_no_service + users[1:] )
----
-reconsider: True
-code: |
-  new_delivery_parties = DAList("new_delivery_parties", elements = other_parties - new_service_parties + users[1:] )
+  delivery_parties = DAList("delivery_parties", elements = other_parties.filter('non_service_parties', needs_service=False) + users[1:] )
 ---
 id: delivery intro
 continue button field: delivery_intro
@@ -1287,9 +1252,7 @@ question: |
 subquestion: |
   
   Your forms are ready. View and download your forms below. Click **Make changes** to fix any mistakes.
-
-  DEBUG: new_service_parties (using filter) = ${ comma_and_list(other_parties.filter('new_service_parties', needs_service=True).full_names()) } 
-  
+ 
   This program **does not file** your Motion with the court or deliver it to other parties in your case. You will need to do this yourself. Learn about [**e-filing in Illinois**](https://www.illinoiscourts.gov/eservices/information-for-filers-without-lawyers).
 
   ${ action_button_html(url_action('review_answers'), label=':edit: Make changes', color='success', size="md") }
@@ -1378,8 +1341,7 @@ code: |
   notice_single_pdf_bundle.enabled = False
   notice_attachment.enabled = False
 
-  # update this with a real test
-  if number_needing_notice > 0:
+  if delivery_parties.number() > 0:
     notice_single_pdf_bundle.enabled = True
     notice_attachment.enabled = True
 
@@ -1454,7 +1416,7 @@ attachment:
       - "e_sign_name__2": ${ users[0].name.full(middle="full") if e_signature else '' }
       - "ps_name": ${ process_server.name.full(middle="full") }
       - "ps_address": ${ process_server.address.on_one_line(bare=True) }
-      - "service_parties": ${ comma_and_list( other_parties.filter('new_service_parties', needs_service=True).full_names() ) }
+      - "service_parties": ${ comma_and_list( other_parties.filter('service_parties', needs_service=True).full_names() ) }
       - "ps_reason": ${ process_server_reason }
       - "docs_to_deliver": ${ "Motion to Approve Process Server Who is Not Licensed" }
       
@@ -1869,7 +1831,7 @@ review:
       % endfor
   - Edit: in_re_check
     button: |
-      **Does the court case have "In re:" in the name?**  
+      **Does the court case have "In re:" in the name?**
       ${word(yesno(in_re_check))}
   - Edit: in_re_label
     button: |
@@ -1891,8 +1853,12 @@ review:
   - Edit: who_needs_service
     button: |
       **Who needs service by a process server:**
-      ${ comma_and_list(service_parties) } 
       
+      % for party in other_parties:
+      % if party.needs_service == True:
+        * ${ party.name.full(middle="full") } 
+      % endif
+      % endfor      
   - Edit: has_court_date
     button: |
       **Do you already have a court date for your motion from the clerk?**
@@ -2026,7 +1992,15 @@ review:
   - Edit: x.delivery_date
     button: |
       **Delivery on:**
+      % if x.delivery_date != "" and x.delivery_time != "":
       ${ x.delivery_date } at ${ format_time(x.delivery_time, "h:mm a") }
+      % elif x.delivery_date != "":
+      ${ x.delivery_date } (time not entered)
+      % elif x.delivery_time != "":
+      ${ format_time(x.delivery_time, "h:mm a") } (date not entered)
+      % else:
+      None entered
+      % endif
     show if: x.knows_delivery_method
 ---
 id: users review screen
@@ -2139,12 +2113,21 @@ review:
       % endfor
   - Edit: in_re_check
     button: |
-      **Does the court case have "In re:" in the name?**  
+      **Does the court case have "In re:" in the name?**
       ${word(yesno(in_re_check))}
   - Edit: in_re_label
     button: |
       **In re:** ${in_re_label}
     show if: in_re_check
+  - Edit: who_needs_service
+    button: |
+      **Who needs service by a process server:**
+      
+      % for party in other_parties:
+      % if party.needs_service == True:
+        * ${ party.name.full(middle="full") } 
+      % endif
+      % endfor      
 ---
 id: Process server review screen
 section: Process server details
@@ -2169,8 +2152,12 @@ review:
   - Edit: who_needs_service
     button: |
       **Who needs service by a process server:**
-      ${ comma_and_list(service_parties) } 
       
+      % for party in other_parties:
+      % if party.needs_service == True:
+        * ${ party.name.full(middle="full") } 
+      % endif
+      % endfor      
 ---
 id: delivery info review screen
 section: Notice and delivery (optional)
