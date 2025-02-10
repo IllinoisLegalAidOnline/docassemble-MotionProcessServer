@@ -192,13 +192,15 @@ question: |
 subquestion: |
   A private process server is someone other than the sheriff who can serve court papers.
   
-  If you want to use someone who is not a licensed process server to serve the **{summons}** and complaint or petition on the defendants/respondents in your case, you must ask the judge for permission by filing a *Motion to Approve Process Server Who is Not Licensed*.
+  If you want to use someone who is not a **{licensed private process server}** to serve the **{summons}** and complaint or petition on the defendants/respondents in your case, you must ask the judge for permission by filing a *Motion to Approve Process Server Who is Not Licensed*.
   
   You do not need to ask the judge for permission to use the sheriff or a licensed process server to serve your court papers.
 ---
 terms: 
   - summons: |
       A **summons** is an official notice of a lawsuit. It is given to a person or business so that they know they are being sued.
+  - licensed private process server: |
+      A **licensed private process server** is a licensed private detective or a registered employee of a licensed private detective agency. Licensed process servers are private businesses and charge a fee.
 ---
 id: whats next
 continue button field: whats_next
@@ -227,7 +229,7 @@ event: must_be_unlicensed
 question: |
   Sorry
 subquestion: |
-  You only need to file ask the court for approval if the person you want to be a process server is not licensed.
+  You only need to ask the court for approval if the person you want to be a process server is not licensed.
   
   If you want to serve the parties you are suing using the sheriff or a licensed process server, you do not need to file a Motion.
 
@@ -570,6 +572,8 @@ question: |
   Why are you asking to use an unlicensed process server?
 subquestion: |
   The *Motion to Approve Process Server Who is Not Licensed* has room for about 200 characters including spaces.
+
+  For example, you could explain that the sheriff has been unable to serve the other parties in your case.
 fields:
   - I want to use an unlicensed process server because:: process_server_reason
     input type: area
@@ -1827,7 +1831,7 @@ review:
       % endfor
   - Edit: in_re_check
     button: |
-      **Does the court case have "In re:" in the name?**  
+      **Does the court case have "In re:" in the name?**
       ${word(yesno(in_re_check))}
   - Edit: in_re_label
     button: |
@@ -1988,7 +1992,15 @@ review:
   - Edit: x.delivery_date
     button: |
       **Delivery on:**
+      % if x.delivery_date != "" and x.delivery_time != "":
       ${ x.delivery_date } at ${ format_time(x.delivery_time, "h:mm a") }
+      % elif x.delivery_date != "":
+      ${ x.delivery_date } (time not entered)
+      % elif x.delivery_time != "":
+      ${ format_time(x.delivery_time, "h:mm a") } (date not entered)
+      % else:
+      None entered
+      % endif
     show if: x.knows_delivery_method
 ---
 id: users review screen
@@ -2101,7 +2113,7 @@ review:
       % endfor
   - Edit: in_re_check
     button: |
-      **Does the court case have "In re:" in the name?**  
+      **Does the court case have "In re:" in the name?**
       ${word(yesno(in_re_check))}
   - Edit: in_re_label
     button: |
