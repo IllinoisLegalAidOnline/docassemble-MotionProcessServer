@@ -571,7 +571,7 @@ id: process server reason
 question: |
   Why are you asking to use an unlicensed process server?
 subquestion: |
-  The *Motion to Approve Process Server Who is Not Licensed* has room for about 200 characters including spaces.
+  The *Motion to Approve Process Server Who is Not Licensed* has room for 3 lines of text or about 200 characters including spaces.
 
   For example, you could explain that the sheriff has been unable to serve the other parties in your case.
 fields:
