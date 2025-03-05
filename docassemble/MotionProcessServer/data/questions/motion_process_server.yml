@@ -1,7 +1,7 @@
 metadata:
-  title: Request to approve process server
+  title: Request to approve an unlicensed process server
   short title: Request to approve process server
-  comment: This program helps you ask a judge to approve a process server without a license.
+  comment: This program helps you ask a judge to approve an unlicensed process server.
   authors:
     - Matt Newsted
 ---
@@ -25,7 +25,7 @@ objects:
 ---
 code: |
   al_form_type = 'existing_case'
-  ilao_easy_form_title = "Request to approve process server"
+  ilao_easy_form_title = "Request to approve an unlicensed process server"
   ilao_easy_form_url = "https://www.illinoislegalaid.org/legal-information/special-process-server-request"
   form_name = "Motion"
   github_user = 'IllinoisLegalAidOnline'
@@ -149,9 +149,9 @@ code: |
 ---
 id: welcome
 question: |
-  Request to approve process server
+  Request to approve unlicesensed process server
 subquestion: |
-  Welcome to Illinois Legal Aid Online's **Request to approve process server** Easy Form.
+  Welcome to Illinois Legal Aid Online's **Request to approve an unlicensed process server** Easy Form.
 
   This program helps you ask the court for permission to use an unlicensed process server in your case. It will make a *Motion to Approve Process Server Who is Not Licensed*.
 
@@ -190,17 +190,19 @@ continue button field: about_process_servers
 question: |
   About private process servers
 subquestion: |
-  A private process server is someone other than the sheriff who can serve court papers.
+  A private process server is someone other than the sheriff who can serve court papers. Private process servers can be licensed or unlicensed.
+
+  * A licensed private process server is a licensed private detective or a registered employee of a licensed private detective agency that charges a fee for their service.
+  * An unlicensed private process server is anyone 18 or older who is not involved in the case and has been approved by the court to serve the papers.
   
-  If you want to use someone who is not a **{licensed private process server}** to serve the **{summons}** and complaint or petition on the defendants/respondents in your case, you must ask the judge for permission by filing a *Motion to Approve Process Server Who is Not Licensed*.
+  If you want to use someone who is not a licensed private process server to serve the **{summons}** and complaint or petition on the defendants/respondents in your case, you must ask the judge for permission by filing a *Motion to Approve Process Server Who is Not Licensed*.
   
   You do not need to ask the judge for permission to use the sheriff or a licensed process server to serve your court papers.
 ---
 terms: 
   - summons: |
       A **summons** is an official notice of a lawsuit. It is given to a person or business so that they know they are being sued.
-  - licensed private process server: |
-      A **licensed private process server** is a licensed private detective or a registered employee of a licensed private detective agency. Licensed process servers are private businesses and charge a fee.
+
 ---
 id: whats next
 continue button field: whats_next
@@ -217,7 +219,7 @@ subquestion: |
 ---
 id: want to use unlicensed process server
 question: |
-  Do you want to use a process server who is unlicensed?
+  Do you want to use an unlicensed process server?
 subquestion: |
   **Reminder:** You do not need to ask the judge for permission if you want to use the sheriff or a licensed process server in this case.
 fields:
@@ -242,7 +244,7 @@ id: is server party in case
 question: |
   Is the person you want to be a process server a party in the court case?
 subquestion: |
-  This means the person can't be a plaintiff, petitioner, defendant, or respondent in this court case. 
+  This means the person who servers your papers can't be a plaintiff, petitioner, defendant, or respondent in this court case. 
 fields:
   - no label: is_server_a_party
     datatype: yesnoradio  
@@ -620,11 +622,11 @@ code: |
 id: skip notice
 continue button field: skip_notice
 question: |
-  Skip notice and delivery for now
+  No notice needed for this motion
 subquestion: |
-  Since the other parties in this case all need service from the unlicensed process server, you do not need to notify them about your *Motion to Approve Process Server Who is Not Licensed*.
+  Since the other parties in this case all need to be served by the unlicensed process server, you do not need to notify them about this *Motion to Approve Process Server Who is Not Licensed*.
   
-  This means you do not need to use a *Notice of Court Date for Motion* form or fill out the Proof of deliery section of your forms.
+  This means you do not need to use a *Notice of Court Date for Motion* form or fill out the Proof of delivery section of your motion.
 ---
 id: skip notice debug
 continue button field: skip_notice_debug
@@ -738,7 +740,7 @@ subquestion: |
 
   You must let them know about your Motion and when you will present it to the judge.
 
-  If someone in the case has a lawyer, you must let their lawyer know.
+  If they have a lawyer, you must let their lawyer know.
 
   **Note:** You must deliver your forms before the court date when you will present your Motion to the judge.
 ---
@@ -1282,7 +1284,7 @@ content: |
 generic object: ALDocumentBundle
 template: x.send_email_template
 subject: |
-  Request to approve process server forms
+  Request to approve an unlicensed process server forms
 content: |
   Your forms are attached.
   
@@ -1848,7 +1850,7 @@ review:
       ${ process_server.address.on_one_line(bare=True) }
   - Edit: process_server_reason
     button: |
-      **Reason why you want to use a process server:**
+      **Reason why you want to use an unlicensed process server:**
       ${ process_server_reason }
   - Edit: who_needs_service
     button: |
@@ -2147,7 +2149,7 @@ review:
       ${ process_server.address.on_one_line(bare=True) }
   - Edit: process_server_reason
     button: |
-      **Reason why you want to use a process server:**
+      **Reason why you want to use an unlicensed process server:**
       ${ process_server_reason }
   - Edit: who_needs_service
     button: |
