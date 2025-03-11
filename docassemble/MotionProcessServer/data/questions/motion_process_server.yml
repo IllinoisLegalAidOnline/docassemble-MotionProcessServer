@@ -912,6 +912,8 @@ id: add lawyer
 generic object: ALIndividual
 question: |
   Who is  ${ x.name.full(middle="full") }'s lawyer?
+subquestion: |
+  The lawyer's information should be on your court papers. You also may be able to find this information from the Circuit Clerk of ${ trial_court.address.county } County. Visit the [**Illinois Courts website**](https://www.illinoiscourts.gov/courts-directory/interactive-map/by-court-type/) to look up how to contact the clerk's office.
 fields:
   - First name: x.lawyer.name.first
   - Middle name: x.lawyer.name.middle
@@ -934,6 +936,10 @@ question: |
   % else:
   What is ${ x.name.full(middle="full") }'s address?
   % endif
+subquestion: |
+  % if x.is_represented:
+  The lawyer's information should be on your court papers. You also may be able to find this information from the Circuit Clerk of ${ trial_court.address.county } County. Visit the [**Illinois Courts website**](https://www.illinoiscourts.gov/courts-directory/interactive-map/by-court-type/) to look up how to contact the clerk's office.
+  % endif  
 fields:
   - Street address: x.address.address
     address autocomplete: True
@@ -959,6 +965,10 @@ question: |
   % else:
   What is ${ users[i].name.full(middle="full") }'s address?
   % endif
+subquestion: |
+  % if users[i].is_represented:
+  The lawyer's information should be on your court papers. You also may be able to find this information from the Circuit Clerk of ${ trial_court.address.county } County. Visit the [**Illinois Courts website**](https://www.illinoiscourts.gov/courts-directory/interactive-map/by-court-type/) to look up how to contact the clerk's office.
+  % endif  
 fields:
   - Street address: users[i].address.address
     address autocomplete: True
