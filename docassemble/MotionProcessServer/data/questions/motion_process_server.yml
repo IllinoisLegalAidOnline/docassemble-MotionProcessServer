@@ -209,10 +209,9 @@ continue button field: incorporated_defendants
 question: |
   Suing a business
 subquestion: |
-  **Note:** You might not need a private process server when suing a business. If a business is incorporated, they are required to name a Registered Agent in Illinois that can receive court papers if the business is sued.
+  **Note:** You might not need a private process server when suing a business. If a business is incorporated, they are required to name a registered agent in Illinois that can receive court papers if the business is sued.
 
-  If you are suing a business, check if it is incorporated on the [**Illinois Secretary of State's website**](https://apps.ilsos.gov/businessentitysearch/). If the business has a Registered Agent, you might save time and money by asking the sheriff to serve court papers on the business's agent.
- 
+  If you are suing a business, check if it is incorporated on the [**Illinois Secretary of State's website**](https://apps.ilsos.gov/businessentitysearch/). If the business has a registered agent, serving the registered agent is proper service. This is generally the easiest way to serve court papers on a business.  
 ---
 id: whats next
 continue button field: whats_next
