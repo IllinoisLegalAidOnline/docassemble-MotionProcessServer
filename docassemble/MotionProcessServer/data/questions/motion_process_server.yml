@@ -95,7 +95,6 @@ code: |
       hearing_date
     attend_court
 
-    delivery_intro
     for person in delivery_parties:
       if person.is_represented:
         person.lawyer.name.first
@@ -150,11 +149,11 @@ code: |
 ---
 id: welcome
 question: |
-  Request to approve unlicesensed process server
+  Request to approve unliceensed process server
 subquestion: |
   Welcome to Illinois Legal Aid Online's **Request to approve an unlicensed process server** Easy Form.
 
-  This program helps you ask the court for permission to use an unlicensed process server in your case. It will make a *Motion to Approve Process Server Who is Not Licensed*.
+  This program helps you ask the court for permission to use an unlicensed process server in your case. It will make a *Motion to Approve Process Server Who is Not Licensed* form.
 
   When you start a lawsuit, the complaint or petition, and a **{summons}**, must be properly delivered to whoever you are suing. To learn more, read ILAO's article about [**serving a summons**](https://www.illinoislegalaid.org/node/147221).
 field: sees_nav_bar
@@ -743,13 +742,13 @@ terms:
 id: notice intro
 continue button field: notice_intro
 question: |
-  Let the other parties in your case know about your motion
+  Send your ${ form_name } to all other parties
 subquestion: |
   These are the other parties in this case that you need to notify: ${comma_and_list(delivery_parties)}.
 
-  You must let them know about your Motion and when you will present it to the judge.
+  You must let them know about your Motion and when you will present it to the judge. If they have a lawyer, you must let their lawyer know.
 
-  If they have a lawyer, you must let their lawyer know.
+  You can notify them by sending copies of your forms to them or their lawyers.
 
   **Note:** You must deliver your forms before the court date when you will present your Motion to the judge.
 ---
@@ -804,7 +803,7 @@ subquestion: |
   
   If the clerk gives you the hearing date after you file your *Motion to Approve Process Server Who is Not Licensed*, you can add it to your *Notice of Court Date for Motion* later. 
   
-  **Note:** Be sure to add the hearing information to your *Notice of Court Date for Motion* before you send it to other parties in your case.
+  **Note:** If you don't have this now, be sure to add the hearing information to your *Notice of Court Date for Motion* before you send it to other parties in your case.
 fields:
   - "Know court date and time?": has_court_date
     datatype: yesnoradio
@@ -816,8 +815,6 @@ subquestion: |
   Enter the date and time of the court hearing.
 
   If you do not have this information now, you can click **Back** and change your answer.
-
-  **Note:** Be sure to add the date and time to your *Notice of Court Date for Motion* before you send it to other parties in your case.
 fields:
   - Hearing date: hearing_date
     datatype: date
@@ -885,6 +882,7 @@ reconsider: True
 code: |
   delivery_parties = DAList("delivery_parties", elements = other_parties.filter('non_service_parties', needs_service=False) + users[1:] )
 ---
+# delivery_intro consolidated into notice_intro page
 id: delivery intro
 continue button field: delivery_intro
 question: |
