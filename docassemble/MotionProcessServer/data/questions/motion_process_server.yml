@@ -564,7 +564,7 @@ fields:
 ---
 id: process server address
 question: |
-  What is ${ process_server.name.full(middle="full") }'s address?
+  What is ${ process_server.name_full() }'s address?
 fields:
   - Street address: process_server.address.address
     address autocomplete: True
@@ -595,12 +595,12 @@ sets:
 id: who needs service
 continue button field: who_needs_service
 question: |
-  Who do you want ${ process_server.name.full(middle="full") } to serve?
+  Who do you want ${ process_server.name_full() } to serve?
 subquestion: |
   % if other_parties.number() == 1:
-  Select the ${ opposing_label } you want ${ process_server.name.full(middle="full") } to serve your court papers on.
+  Select the ${ opposing_label } you want ${ process_server.name_full() } to serve your court papers on.
   % else:
-  Select the ${ opposing_label }s you want ${ process_server.name.full(middle="full") } to serve your court papers on.
+  Select the ${ opposing_label }s you want ${ process_server.name_full() } to serve your court papers on.
   % endif
 fields:
   code: service_list
@@ -617,7 +617,7 @@ code: |
   service_list = list()
   for index in range(other_parties.number()):
     service_list.append(
-      {"label": other_parties[ index ].name.full(middle='full'),
+      {"label": other_parties[ index ].name_full(),
        "field": "other_parties[" + str(index) + "].needs_service",
        "datatype": "yesnowide",
        "required": "False"
@@ -712,7 +712,7 @@ id: e-signature
 question: |
   Do you want to add your e-signature to your ${ form_name }?
 subquestion: |
-  This program can put “**/s/ ${users[0].name.full(middle='full')}**” where you would sign your name. The court will accept this as your signature.
+  This program can put “**/s/ ${users[0].name_full()}**” where you would sign your name. The court will accept this as your signature.
 
   If you do not add your **{e-signature}** now, you must sign your paper forms before you file and deliver them.
 
@@ -897,7 +897,7 @@ subquestion: |
 id: has lawyer
 generic object: ALIndividual
 question: |
-  Does ${ x.name.full(middle="full") } have a lawyer in this case?
+  Does ${ x.name_full() } have a lawyer in this case?
 field: x.is_represented
 choices:
   - Yes: True
@@ -908,7 +908,7 @@ choices:
 id: add lawyer
 generic object: ALIndividual
 question: |
-  Who is  ${ x.name.full(middle="full") }'s lawyer?
+  Who is  ${ x.name_full() }'s lawyer?
 subquestion: |
   The lawyer's information should be on your court papers. You also may be able to find this information from the Circuit Clerk of ${ trial_court.address.county } County. Visit the [**Illinois Courts website**](https://www.illinoiscourts.gov/courts-directory/interactive-map/by-court-type/) to look up how to contact the clerk's office.
 fields:
@@ -929,9 +929,9 @@ sets:
 generic object: ALIndividual
 question: |
   % if x.is_represented:
-  What is ${ x.lawyer.name.full(middle="full") }'s address?
+  What is ${ x.lawyer.name_full() }'s address?
   % else:
-  What is ${ x.name.full(middle="full") }'s address?
+  What is ${ x.name_full() }'s address?
   % endif
 subquestion: |
   % if x.is_represented:
@@ -958,9 +958,9 @@ sets:
 generic object: ALIndividual
 question: |
   % if users[i].is_represented:
-  What is ${ users[i].lawyer.name.full(middle="full") }'s address?
+  What is ${ users[i].lawyer.name_full() }'s address?
   % else:
-  What is ${ users[i].name.full(middle="full") }'s address?
+  What is ${ users[i].name_full() }'s address?
   % endif
 subquestion: |
   % if users[i].is_represented:
@@ -982,9 +982,9 @@ id: knows delivery method
 generic object: ALIndividual
 question: |
   % if x.is_represented:
-  Do you know **how** and **when** you will send your forms to ${ x.lawyer.name.full(middle="full") }?
+  Do you know **how** and **when** you will send your forms to ${ x.lawyer.name_full() }?
   % else:
-  Do you know **how** and **when** you will send your forms to ${ x.name.full(middle="full") }?
+  Do you know **how** and **when** you will send your forms to ${ x.name_full() }?
   % endif
 subquestion: |
   ${ collapse_template(delivery_method_help) }  
@@ -1020,9 +1020,9 @@ id: user party delivery method
 #generic object: ALIndividual
 question: |
   % if users[i].is_represented:
-  How will you send your forms to ${ users[i].lawyer.name.full(middle="full") }?
+  How will you send your forms to ${ users[i].lawyer.name_full() }?
   % else:
-  How will you send your forms to ${ users[i].name.full(middle="full") }?
+  How will you send your forms to ${ users[i].name_full() }?
   % endif
 subquestion: |  
   If you have an email address, and the other party listed an email address on the court documents, you must send the forms to them by email or through the e-filing system. You may use US mail or a delivery company, or hand delivery if you or the other party **does not** have an email address. If you are in a prison or jail, you can deliver by mail.
@@ -1120,9 +1120,9 @@ id: other party delivery method
 #changed from generic object to other_parties to allow for changing answers via Back
 question: |
   % if other_parties[i].is_represented:
-  How will you send your forms to ${ other_parties[i].lawyer.name.full(middle="full") }?
+  How will you send your forms to ${ other_parties[i].lawyer.name_full() }?
   % else:
-  How will you send your forms to ${ other_parties[i].name.full(middle="full") }?
+  How will you send your forms to ${ other_parties[i].name_full() }?
   % endif
 subquestion: |  
   If you have an email address, and the other party listed an email address on the court documents, you must send the forms to them by email or through the e-filing system. You may use US mail or a delivery company, or hand delivery if you or the other party **does not** have an email address. If you are in a prison or jail, you can deliver by mail.
@@ -1212,9 +1212,9 @@ id: delivery time
 generic object: ALIndividual
 question: |
   % if x.is_represented:
-  When will you send your forms to ${ x.lawyer.name.full(middle="full") }?
+  When will you send your forms to ${ x.lawyer.name_full() }?
   % else:
-  When will you send your forms to ${ x.name.full(middle="full") }?
+  When will you send your forms to ${ x.name_full() }?
   % endif
 subquestion: |
   For best results, complete the Proof of Delivery section and send the forms today.
@@ -1400,15 +1400,15 @@ attachment:
           % else:
           % if party_label == 'plaintiff' or party_label == 'petitioner':
           % if users.number() > 1:
-          ${ users[0].name.full(middle="full") }, et al.
+          ${ users[0].name_full() }, et al.
           % else:
-          ${ users[0].name.full(middle="full") }
+          ${ users[0].name_full() }
           % endif
           % else:
           % if other_parties.number() > 1:
-          ${ other_parties[0].name.full(middle="full") }, et al.
+          ${ other_parties[0].name_full() }, et al.
           % else:
-          ${ other_parties[0].name.full(middle="full") }
+          ${ other_parties[0].name_full() }
           % endif
           % endif
           % endif
@@ -1419,9 +1419,9 @@ attachment:
           ${other_parties.full_names()}
           % endif
 
-      - "user__1": ${ users[0].name.full(middle="full") }
-      - "user__2": ${ users[0].name.full(middle="full") }
-      - "user__3": ${ users[0].name.full(middle="full") }
+      - "user__1": ${ users[0].name_full() }
+      - "user__2": ${ users[0].name_full() }
+      - "user__3": ${ users[0].name_full() }
       - "user_mail_address_one_line__1": ${ users[0].address.on_one_line(bare=True) }
       - "user_mail_address_one_line__2": ${ users[0].address.on_one_line(bare=True) }
       - "user_phone_number__1": ${ phone_number_formatted(users[0].phone_number) }
@@ -1431,9 +1431,9 @@ attachment:
       - "case_number__1": ${ case_number }
       - "case_number__2": ${ case_number }
       - "case_number__3": ${ case_number }
-      - "e_sign_name__1": ${ users[0].name.full(middle="full") if e_signature else '' }
-      - "e_sign_name__2": ${ users[0].name.full(middle="full") if e_signature else '' }
-      - "ps_name": ${ process_server.name.full(middle="full") }
+      - "e_sign_name__1": ${ users[0].name_full() if e_signature else '' }
+      - "e_sign_name__2": ${ users[0].name_full() if e_signature else '' }
+      - "ps_name": ${ process_server.name_full() }
       - "ps_address": ${ process_server.address.on_one_line(bare=True) }
       - "service_parties": ${ comma_and_list( other_parties.filter('service_parties', needs_service=True).full_names() ) }
       - "ps_reason": ${ process_server_reason }
@@ -1441,9 +1441,9 @@ attachment:
       
       - "delivery_party1_name_full": | 
           % if delivery_parties[0].is_represented:
-          ${ delivery_parties[0].lawyer.name.full(middle="full") }, (lawyer for ${ delivery_parties[0].name.full(middle="full") })
+          ${ delivery_parties[0].lawyer.name_full() }, (lawyer for ${ delivery_parties[0].name_full() })
           % else:
-          ${ delivery_parties[0].name.full(middle="full") }
+          ${ delivery_parties[0].name_full() }
           % endif
       - "delivery_party1_mail_address_on_one_line": ${ delivery_parties[0].address.on_one_line(bare=True) }
       - "delivery_party1_email": ${ delivery_parties[0].delivery_email if delivery_parties[0].knows_delivery_method else '' }
@@ -1484,9 +1484,9 @@ attachment:
 
       - "delivery_party2_name_full": | 
           % if delivery_parties[1].is_represented:
-          ${ delivery_parties[1].lawyer.name.full(middle="full") }, (lawyer for ${ delivery_parties[1].name.full(middle="full") })
+          ${ delivery_parties[1].lawyer.name_full() }, (lawyer for ${ delivery_parties[1].name_full() })
           % else:
-          ${ delivery_parties[1].name.full(middle="full") }
+          ${ delivery_parties[1].name_full() }
           % endif
       - "delivery_party2_mail_address_on_one_line": ${ delivery_parties[1].address.on_one_line(bare=True) }
       - "delivery_party2_email": ${ delivery_parties[1].delivery_email if delivery_parties[1].knows_delivery_method else '' }
@@ -1536,18 +1536,18 @@ attachment:
   editable: False
   pdf template file: additional_proof_of_delivery.pdf
   fields:
-      - "user__1": ${ users[0].name.full(middle="full") }
+      - "user__1": ${ users[0].name_full() }
       - "user_mail_address_one_line__1": ${ users[0].address.on_one_line(bare=True) }
       - "user_phone_number__1": ${ phone_number_formatted(users[0].phone_number) }
       - "user_email__1": ${ users[0].email if users[0].has_email_address else '' }
       - "case_number__1": ${ case_number }
-      - "e_sign_name__1": ${ users[0].name.full(middle="full") if e_signature else '' }
+      - "e_sign_name__1": ${ users[0].name_full() if e_signature else '' }
 
       - "delivery_party1_name_full": | 
           % if x.is_represented:
-          ${ x.lawyer.name.full(middle="full") }, (lawyer for ${ x.name.full(middle="full") })
+          ${ x.lawyer.name_full() }, (lawyer for ${ x.name_full() })
           % else:
-          ${ x.name.full(middle="full") }
+          ${ x.name_full() }
           % endif
       - "delivery_party1_mail_address_on_one_line": ${ x.address.on_one_line(bare=True) }
       - "delivery_party1_email": ${ x.delivery_email if x.knows_delivery_method else '' }
@@ -1591,9 +1591,9 @@ attachment:
 
       - "delivery_party2_name_full": | 
           % if x.second_person.is_represented:
-          ${ x.second_person.lawyer.name.full(middle="full") }, (lawyer for ${ x.second_person.name.full(middle="full") })
+          ${ x.second_person.lawyer.name_full() }, (lawyer for ${ x.second_person.name_full() })
           % else:
-          ${ x.second_person.name.full(middle="full") }
+          ${ x.second_person.name_full() }
           % endif
       - "delivery_party2_mail_address_on_one_line": ${ x.second_person.address.on_one_line(bare=True) }
       - "delivery_party2_email": ${ x.second_person.delivery_email if x.second_person.knows_delivery_method else '' }
@@ -1650,15 +1650,15 @@ attachment:
           % else:
           % if party_label == 'plaintiff' or party_label == 'petitioner':
           % if users.number() > 1:
-          ${ users[0].name.full(middle="full") }, et al.
+          ${ users[0].name_full() }, et al.
           % else:
-          ${ users[0].name.full(middle="full") }
+          ${ users[0].name_full() }
           % endif
           % else:
           % if other_parties.number() > 1:
-          ${ other_parties[0].name.full(middle="full") }, et al.
+          ${ other_parties[0].name_full() }, et al.
           % else:
-          ${ other_parties[0].name.full(middle="full") }
+          ${ other_parties[0].name_full() }
           % endif
           % endif
           % endif
@@ -1668,9 +1668,9 @@ attachment:
           % else:
           ${other_parties.full_names()}
           % endif
-      - "user__1": ${ users[0].name.full(middle="full") }
-      - "user__2": ${ users[0].name.full(middle="full") }
-      - "user__3": ${ users[0].name.full(middle="full") }
+      - "user__1": ${ users[0].name_full() }
+      - "user__2": ${ users[0].name_full() }
+      - "user__3": ${ users[0].name_full() }
       - "user_mail_address_one_line__1": ${ users[0].address.on_one_line(bare=True) }
       - "user_mail_address_one_line__2": ${ users[0].address.on_one_line(bare=True) }
       - "user_phone_number__1": ${ phone_number_formatted(users[0].phone_number) }
@@ -1681,8 +1681,8 @@ attachment:
       - "case_number__2": ${ case_number }
       - "case_number__3": ${ case_number }
       - "case_number__4": ${ case_number }
-      - "e_sign_name__1": ${ users[0].name.full(middle="full") if e_signature else '' }
-      - "e_sign_name__2": ${ users[0].name.full(middle="full") if e_signature else '' }
+      - "e_sign_name__1": ${ users[0].name_full() if e_signature else '' }
+      - "e_sign_name__2": ${ users[0].name_full() if e_signature else '' }
       - "motion_summary": ${ "Approve Process Server Who is Not Licensed" }
 
       - "hearing_date": ${ hearing_date if (defined('hearing_date') and has_court_date) else '' }
@@ -1702,9 +1702,9 @@ attachment:
 
       - "delivery_party1_name_full": | 
           % if delivery_parties[0].is_represented:
-          ${ delivery_parties[0].lawyer.name.full(middle="full") }, (lawyer for ${ delivery_parties[0].name.full(middle="full") })
+          ${ delivery_parties[0].lawyer.name_full() }, (lawyer for ${ delivery_parties[0].name_full() })
           % else:
-          ${ delivery_parties[0].name.full(middle="full") }
+          ${ delivery_parties[0].name_full() }
           % endif
       - "delivery_party1_mail_address_on_one_line": ${ delivery_parties[0].address.on_one_line(bare=True) }
       - "delivery_party1_email": ${ delivery_parties[0].delivery_email if delivery_parties[0].knows_delivery_method else '' }
@@ -1727,9 +1727,9 @@ attachment:
 
       - "delivery_party2_name_full": | 
           % if delivery_parties[1].is_represented:
-          ${ delivery_parties[1].lawyer.name.full(middle="full") }, (lawyer for ${ delivery_parties[1].name.full(middle="full") })
+          ${ delivery_parties[1].lawyer.name_full() }, (lawyer for ${ delivery_parties[1].name_full() })
           % else:
-          ${ delivery_parties[1].name.full(middle="full") }
+          ${ delivery_parties[1].name_full() }
           % endif
       - "delivery_party2_mail_address_on_one_line": ${ delivery_parties[1].address.on_one_line(bare=True) }
       - "delivery_party2_email": ${ delivery_parties[1].delivery_email if delivery_parties[1].knows_delivery_method else '' }
@@ -1765,15 +1765,15 @@ attachment:
           % else:
           % if party_label == 'plaintiff' or party_label == 'petitioner':
           % if users.number() > 1:
-          ${ users[0].name.full(middle="full") }, et al.
+          ${ users[0].name_full() }, et al.
           % else:
-          ${ users[0].name.full(middle="full") }
+          ${ users[0].name_full() }
           % endif
           % else:
           % if other_parties.number() > 1:
-          ${ other_parties[0].name.full(middle="full") }, et al.
+          ${ other_parties[0].name_full() }, et al.
           % else:
-          ${ other_parties[0].name.full(middle="full") }
+          ${ other_parties[0].name_full() }
           % endif
           % endif
           % endif
@@ -1784,7 +1784,7 @@ attachment:
           ${other_parties.full_names()}
           % endif
       - "case_number__1": ${ case_number }
-      - "ps_name": ${ process_server.name.full(middle="full") }
+      - "ps_name": ${ process_server.name_full() }
       - "ps_address": ${ process_server.address.on_one_line(bare=True) }
 ---
 
@@ -1839,14 +1839,14 @@ review:
       **Your party: (Edit to change name, lawyer, address, and delivery info)**
 
       % for my_var in users:
-        * ${ my_var.name.full(middle="full") }
+        * ${ my_var.name_full() }
       % endfor
   - Edit: other_parties.revisit
     button: |
       **The other party: (Edit to change name, lawyer, address, and delivery info)**
 
       % for my_var in other_parties:
-        * ${ my_var.name.full(middle="full") }
+        * ${ my_var.name_full() }
       % endfor
   - Edit: in_re_check
     button: |
@@ -1860,7 +1860,7 @@ review:
   - Edit: process_server.name.first
     button: |
       **Process server name:**
-      ${ process_server.name.full(middle="full") }
+      ${ process_server.name_full() }
   - Edit: process_server.address.address
     button: |
       **Process server address:**
@@ -1875,7 +1875,7 @@ review:
       
       % for party in other_parties:
       % if party.needs_service == True:
-        * ${ party.name.full(middle="full") } 
+        * ${ party.name_full() } 
       % endif
       % endfor      
   - Edit: has_court_date
@@ -1951,7 +1951,7 @@ section: Notice and delivery (optional)
 continue button field: x.review_delivery
 generic object: ALIndividual
 question: |
-  Edit ${ x.name.full(middle="full") }'s information
+  Edit ${ x.name_full() }'s information
 subquestion: |  
   % if x == users[0]:
   Edit your address, phone number, and email address in the [**About you**](${ url_action('section_about_you') }) section.
@@ -1962,10 +1962,10 @@ review:
   - Edit: x.name.first
     button: |
       **Party name:**
-      ${ x.name.full(middle="full")  }
+      ${ x.name_full()  }
   - Edit: x.is_represented
     button: |
-      **Does ${ x.name.full(middle="full") } have a lawyer?**
+      **Does ${ x.name_full() } have a lawyer?**
       % if x.is_represented is None:
       I don't know
       % else:
@@ -1974,14 +1974,14 @@ review:
   - Edit: x.lawyer.name.first
     button: |
       **Lawyer name:**
-      ${ x.lawyer.name.full(middle="full") }
+      ${ x.lawyer.name_full() }
     show if: x.is_represented
   - Edit: x.address.address
     button: |
       % if x.is_represented == True:
-      **${ x.lawyer.name.full(middle="full") }'s address:**
+      **${ x.lawyer.name_full() }'s address:**
       % else:
-      **${ x.name.full(middle="full") }'s address:**
+      **${ x.name_full() }'s address:**
       % endif
       ${ x.address.on_one_line(bare=True) }
   - Edit: x.knows_delivery_method
@@ -2036,7 +2036,7 @@ table: users.table
 rows: users
 columns:
   - Name: |
-      row_item.name.full(middle="full") if defined("row_item.name.first") else ""
+      row_item.name_full() if defined("row_item.name.first") else ""
   - Party, lawyer, address, and delivery info: |
       action_button_html(url_action(row_item.attr_name("review_delivery")), label="Edit", icon="pencil-alt")
 delete buttons: True
@@ -2064,7 +2064,7 @@ table: other_parties.table
 rows: other_parties
 columns:
   - Name: |
-      row_item.name.full(middle="full") if defined("row_item.name.first") else ""
+      row_item.name_full() if defined("row_item.name.first") else ""
   - Party, lawyer, address, and delivery info: |
       action_button_html(url_action(row_item.attr_name("review_delivery")), label="Edit", icon="pencil-alt")
 delete buttons: True
@@ -2121,14 +2121,14 @@ review:
       **Your party: (Edit to change name, lawyer, address, and delivery info)**
 
       % for my_var in users:
-        * ${ my_var.name.full(middle="full") }
+        * ${ my_var.name_full() }
       % endfor
   - Edit: other_parties.revisit
     button: |
       **The other party: (Edit to change name, lawyer, address, and delivery info)**
 
       % for my_var in other_parties:
-        * ${ my_var.name.full(middle="full") }
+        * ${ my_var.name_full() }
       % endfor
   - Edit: in_re_check
     button: |
@@ -2144,7 +2144,7 @@ review:
       
       % for party in other_parties:
       % if party.needs_service == True:
-        * ${ party.name.full(middle="full") } 
+        * ${ party.name_full() } 
       % endif
       % endfor      
 ---
@@ -2159,7 +2159,7 @@ review:
   - Edit: process_server.name.first
     button: |
       **Process server name:**
-      ${ process_server.name.full(middle="full") }
+      ${ process_server.name_full() }
   - Edit: process_server.address.address
     button: |
       **Process server address:**
@@ -2174,7 +2174,7 @@ review:
       
       % for party in other_parties:
       % if party.needs_service == True:
-        * ${ party.name.full(middle="full") } 
+        * ${ party.name_full() } 
       % endif
       % endfor      
 ---
@@ -2191,14 +2191,14 @@ review:
       **Your party: (Edit to change name, lawyer, address, and delivery info)**
 
       % for my_var in users:
-        * ${ my_var.name.full(middle="full") }
+        * ${ my_var.name_full() }
       % endfor
   - Edit: other_parties.revisit
     button: |
       **The other party: (Edit to change name, lawyer, address, and delivery info)**
 
       % for my_var in other_parties:
-        * ${ my_var.name.full(middle="full") }
+        * ${ my_var.name_full() }
       % endfor
   - Edit: has_court_date
     button: |
@@ -2259,7 +2259,7 @@ review:
   - Edit: users[0].name.first
     button: |
       **Your name:**
-      ${ users[0].name.full(middle="full") }
+      ${ users[0].name_full() }
   - Edit: users[0].address.address
     button: |
       **Your address:**
