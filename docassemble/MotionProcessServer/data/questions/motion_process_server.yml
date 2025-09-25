@@ -148,7 +148,7 @@ code: |
 ---
 id: welcome
 question: |
-  Request to approve unliceensed process server
+  Request to approve an unliceensed process server
 subquestion: |
   Welcome to Illinois Legal Aid Online's **Request to approve an unlicensed process server** Easy Form.
 
@@ -465,7 +465,7 @@ continue button field: case_county
 question: |
   In which county was this case filed?
 fields:
-  - no label: trial_court_index
+  - County: trial_court_index
     datatype: integer
     code: |
       court_county_lookup()
@@ -562,14 +562,14 @@ id: process server reason
 question: |
   Why are you asking to use an unlicensed process server?
 subquestion: |
-  The *Motion to Approve Process Server Who is Not Licensed* has room for 5 lines of text or about **400 characters** including spaces.
+  The *Motion to Approve Process Server Who is Not Licensed* has room for 8 lines of text or about **800 characters** including spaces.
 
   For example, you could explain that the sheriff has been unable to serve the other parties in your case.
 fields:
   - I want to use an unlicensed process server because:: process_server_reason
     input type: area
-    rows: 9
-    maxlength: 400
+    rows: 17
+    maxlength: 800
 ---
 sets:
   - other_parties[i].needs_service
@@ -689,7 +689,7 @@ subquestion: |
 
   <div class="alert alert-info ilao-info" role="alert">
     <h6 class="alert-heading">What it means to sign your forms</h6>
-    <p>By signing your <i>Motion to Approve Process Server Who is Not Licensed</i>, you are certifying that:</p>
+    <p>By signing your <i>Motion to Approve Process Server Who is Not Licensed</i> and Proof of Delivery section of your forms, you are certifying that:</p>
     <p><ul>
       <li>Everything on the forms is true and correct, or you have been informed or believe it to be true and correct, and</li>
       <li>You understand that making a false statement on the forms is perjury and has penalties provided by law.</li>    </ul></p>
@@ -1290,7 +1290,13 @@ attachment:
       - "service_parties": ${ other_parties.filter('service_parties', needs_service=True).full_names() }
       - "ps_reason": ${ process_server_reason }
       - "docs_to_deliver": ${ "Motion to Approve Process Server Who is Not Licensed" }
-      
+
+      - "delivery_party1_name_full": | 
+          % if delivery_parties[0].is_represented:
+          ${ delivery_parties[0].lawyer.name_full() }, (lawyer for ${ delivery_parties[0].name_full() })
+          % else:
+          ${ delivery_parties[0].name_full() }
+          % endif      
       - "delivery_party1_mail_address_on_one_line": ${ delivery_parties[0].address.on_one_line(bare=True) }
       - "delivery_party1_email": ${ delivery_parties[0].delivery_email if delivery_parties[0].knows_delivery_method else '' }
       - "delivery_party1_email_efsp": ${ delivery_parties[0].delivery_efsp_email if delivery_parties[0].knows_delivery_method else '' }
@@ -1382,7 +1388,7 @@ attachment:
       - "user__2": ${ users[0].name_full() }
       - "user_mail_address_one_line__1": ${ users[0].address.on_one_line(bare=True) }
       - "user_phone_number__1": ${ phone_number_formatted(users[0].phone_number) }
-      - "user_email": ${ users[0].email if users[0].email_notice else '' }
+      - "user_email": ${ users[0].email if users[0].has_email_address else '' }
       - "case_number__1": ${ case_number }
       - "case_number__2": ${ case_number }
       - "e_sign_name__1": ${ users[0].name_full() if e_signature else '' }
@@ -1505,7 +1511,8 @@ attachment:
       - "courthouse_address": ${ courthouse_info }
       - "clerk_phone": ${ trial_court.phone }
       - "clerk_website": ${ trial_court.website }
-
+        
+      - "document_name": ${ "Motion to Approve Process Server Who is Not Licensed" }
       - "delivery_party1_name_full": | 
           % if delivery_parties[0].is_represented:
           ${ delivery_parties[0].lawyer.name_full() }, (lawyer for ${ delivery_parties[0].name_full() })
