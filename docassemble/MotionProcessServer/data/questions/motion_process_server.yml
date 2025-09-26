@@ -148,7 +148,7 @@ code: |
 ---
 id: welcome
 question: |
-  Request to approve an unliceensed process server
+  Request to approve an unlicensed process server
 subquestion: |
   Welcome to Illinois Legal Aid Online's **Request to approve an unlicensed process server** Easy Form.
 
@@ -562,14 +562,15 @@ id: process server reason
 question: |
   Why are you asking to use an unlicensed process server?
 subquestion: |
-  The *Motion to Approve Process Server Who is Not Licensed* has room for 8 lines of text or about **800 characters** including spaces.
+  The *Motion to Approve Process Server Who is Not Licensed* has room for about **1,000 characters** including spaces.
 
   For example, you could explain that the sheriff has been unable to serve the other parties in your case.
 fields:
   - I want to use an unlicensed process server because:: process_server_reason
+    label above field: True
     input type: area
-    rows: 17
-    maxlength: 800
+    rows: 15
+    maxlength: 1000
 ---
 sets:
   - other_parties[i].needs_service
